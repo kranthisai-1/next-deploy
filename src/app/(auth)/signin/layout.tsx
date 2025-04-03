@@ -8,7 +8,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { authStatus } = useAuth();
   
-
   useEffect(() => {
     if (authStatus === AuthStatus.AuthRequired) {
       router.replace('/signin');
