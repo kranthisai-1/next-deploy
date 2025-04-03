@@ -14,6 +14,7 @@ export default function Signin() {
   const api = useApiInstance();
   const { setAuthStatus } = useAuth();
   const [loading, setLoading] = useState(false);
+  console.log(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
 
   const handleGoogleLoginSuccess = async (
     credentialResponse: CredentialResponse,
