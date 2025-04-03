@@ -28,7 +28,7 @@ const config = [
     plugins: { prettier: prettierPlugin },
     rules: {
       'prettier/prettier': ['error', prettierOptions],
-      'no-console': ['error', { allow: ['warn', 'error'] }],
+      // 'no-console': ['error', { allow: ['warn', 'error'] }],
     },
   },
 ];
