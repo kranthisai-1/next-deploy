@@ -8,7 +8,7 @@ const getAPIBaseURL = () => {
   let environment = '';
   let apiBase = 'api';
 
-  if (process.env.NEXT_PUBLIC_ENVIRONMENT?.toLowerCase() === 'local') {
+  if (process.env.NEXT_PUBLIC_ENVIRONMENT?.toLowerCase() === 'staging') {
     return process.env.NEXT_PUBLIC_API_URL;
   }
 
