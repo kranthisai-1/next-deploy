@@ -1,3 +1,13 @@
+## [1.0.5](https://github.com/kranthisai-1/next-deploy/compare/v1.0.4...v1.0.5) (2025-04-07)
+
+
+### Bug Fixes
+
+* fixes ([215bd52](https://github.com/kranthisai-1/next-deploy/commit/215bd5216a1fb21fd1d0b6a6659861e03402f211))
+* fixes ([98dbef4](https://github.com/kranthisai-1/next-deploy/commit/98dbef467f1d750515bd44ca743abf2c4c31a0e4))
+* fixes ([47d7637](https://github.com/kranthisai-1/next-deploy/commit/47d7637e25a1b8a6a9e29ac5aeced14d13728a12))
+* fixes ([07bc8b0](https://github.com/kranthisai-1/next-deploy/commit/07bc8b0543d0e57cc39450d313a0af3aeef3493d))
+
 ## [1.0.4](https://github.com/kranthisai-1/next-deploy/compare/v1.0.3...v1.0.4) (2025-04-07)
 
 
