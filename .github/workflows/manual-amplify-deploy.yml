@@ -1,27 +1,7 @@
-name: Manual Deploy From Tag
+name: Manual Deploy From Tag (Hardcoded)
 
 on:
   workflow_dispatch:
-    inputs:
-      version_tag:
-        description: "Tag to deploy (e.g., v1.2.3)"
-        required: true
-      deployment_environment:
-        description: "Target environment"
-        required: true
-        type: choice
-        options:
-          - staging
-          - production
-      deployment_message:
-        description: "Why are you deploying?"
-        required: false
-        default: "Manual deploy"
-      should_notify_over_slack:
-        description: "Notify Slack?"
-        required: false
-        default: true
-        type: boolean
 
 jobs:
   deploy:
@@ -32,40 +12,23 @@ jobs:
       PRODUCTION_WEBHOOK: "https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=da0ac255-2976-48ec-a99b-be6397caf298&token=GD0zBA1bAAFOlD87jT3KMJik8ylM0J5Nsex3OUNIOg"
 
     steps:
-      - name: Checkout tag
+      - name: Checkout hardcoded tag v1.0.22
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.version_tag }}
+          ref: v1.0.22
 
       - name: Confirm tag content
         run: |
-          echo "✅ Checked out tag: ${{ inputs.version_tag }}"
+          echo "✅ Checked out tag: v1.0.22"
           git log -1 --oneline
 
-      - name: Select webhook URL
-        id: webhook
+      - name: Trigger Amplify Build for Tag (Hardcoded)
         run: |
-          case "${{ inputs.deployment_environment }}" in
-            "staging")
-              echo "url=${STAGING_WEBHOOK}" >> "$GITHUB_OUTPUT"
-              ;;
-            "production")
-              echo "url=${PRODUCTION_WEBHOOK}" >> "$GITHUB_OUTPUT"
-              ;;
-            *)
-              echo "Unsupported environment"
-              exit 1
-              ;;
-          esac
-
-      - name: Trigger Amplify Build for Tag
-        run: |
-         curl -X POST \
-          -H "Content-Type: application/json" \
-          -d "{
-             \"clientMetadata\": {
-             \"version_tag\": \"${{ inputs.version_tag }}\"
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -d '{
+              "clientMetadata": {
+                "version_tag": "v1.0.22"
               }
-          }" \
-         "${{ steps.webhook.outputs.url }}"
-
+            }' \
+            "https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=491b16b6-4c4b-4690-ba80-3e4dcf40a4d4&token=HoP06RMo7z7VPwCznlDYrfSHdqBcPTCnMWgEybr9A"
