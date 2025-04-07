@@ -26,7 +26,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     env:
       STAGING_WEBHOOK: "https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=491b16b6-4c4b-4690-ba80-3e4dcf40a4d4&token=HoP06RMo7z7VPwCznlDYrfSHdqBcPTCnMWgEybr9A"
       PRODUCTION_WEBHOOK: "https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=da0ac255-2976-48ec-a99b-be6397caf298&token=GD0zBA1bAAFOlD87jT3KMJik8ylM0J5Nsex3OUNIOg"
@@ -58,10 +57,15 @@ jobs:
               ;;
           esac
 
-      - name: Trigger Amplify build
+      - name: Trigger Amplify Build for Tag
         run: |
-          echo "🚀 Triggering Amplify build for tag ${{ inputs.version_tag }} on env ${{ inputs.deployment_environment }}..."
-          curl -X POST \
-            -H "Content-Type: application/json" \
-            -d '{}' \
-            "${{ steps.webhook.outputs.url }}"
+             curl -X POST \
+             -H "Content-Type: application/json" \
+             -d '{
+             "ref": "refs/tags/${{ inputs.version_tag }}",
+             "head_commit": {
+                "id": "${{ github.sha }}",
+                "message": "Deploying ${{ inputs.version_tag }}"
+              }
+             }' \
+             "${{ steps.webhook.outputs.url }}"
