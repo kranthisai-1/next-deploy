@@ -1,34 +1,99 @@
-name: Manual Deploy From Tag (Hardcoded)
+name: Manual Tag Deployment
 
 on:
   workflow_dispatch:
+    inputs:
+      version_tag:
+        description: "Tag to deploy (e.g., v1.2.3)"
+        required: true
+      deployment_environment:
+        description: "Target environment"
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+      deployment_message:
+        description: "Deployment reason"
+        required: false
+        default: "Manual deployment triggered"
+      should_notify_over_slack:
+        description: "Send Slack notification?"
+        required: false
+        default: true
+        type: boolean
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
-    env:
-      STAGING_WEBHOOK: "https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=491b16b6-4c4b-4690-ba80-3e4dcf40a4d4&token=HoP06RMo7z7VPwCznlDYrfSHdqBcPTCnMWgEybr9A"
-      PRODUCTION_WEBHOOK: "https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=da0ac255-2976-48ec-a99b-be6397caf298&token=GD0zBA1bAAFOlD87jT3KMJik8ylM0J5Nsex3OUNIOg"
-
+    environment: ${{ github.event.inputs.deployment_environment }}
+    
     steps:
-      - name: Checkout hardcoded tag v1.0.22
+      - name: Validate inputs
+        run: |
+          if ! git ls-remote --tags origin refs/tags/${{ github.event.inputs.version_tag }}; then
+            echo "::error::Tag ${{ github.event.inputs.version_tag }} does not exist!"
+            exit 1
+          fi
+
+      - name: Checkout tag
         uses: actions/checkout@v4
         with:
-          ref: v1.0.22
+          ref: refs/tags/${{ github.event.inputs.version_tag }}
+          fetch-depth: 0  # Required for full commit history
 
-      - name: Confirm tag content
+      - name: Verify tag authenticity
         run: |
-          echo "✅ Checked out tag: v1.0.22"
-          git log -1 --oneline
+          git verify-tag ${{ github.event.inputs.version_tag }} || {
+            echo "::error::Tag verification failed!"
+            exit 1
+          }
+          echo "✅ Validated signed tag: ${{ github.event.inputs.version_tag }}"
 
-      - name: Trigger Amplify Build for Tag (Hardcoded)
+      - name: Set up webhook URL
+        id: webhook
+        run: |
+          case "${{ github.event.inputs.deployment_environment }}" in
+            staging)
+              echo "url=${{ secrets.AMPLIFY_STAGING_WEBHOOK }}" >> $GITHUB_OUTPUT
+              ;;
+            production)
+              echo "url=${{ secrets.AMPLIFY_PROD_WEBHOOK }}" >> $GITHUB_OUTPUT
+              ;;
+            *)
+              echo "::error::Invalid environment"
+              exit 1
+              ;;
+          esac
+
+      - name: Trigger Amplify deployment
         run: |
           curl -X POST \
             -H "Content-Type: application/json" \
             -d '{
               "clientMetadata": {
-                "version_tag": "v1.0.22"
+                "version_tag": "${{ github.event.inputs.version_tag }}",
+                "deployment_message": "${{ github.event.inputs.deployment_message }}"
               }
             }' \
-            "https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=491b16b6-4c4b-4690-ba80-3e4dcf40a4d4&token=HoP06RMo7z7VPwCznlDYrfSHdqBcPTCnMWgEybr9A"
+            "${{ steps.webhook.outputs.url }}"
+
+      - name: Notify Slack
+        if: ${{ github.event.inputs.should_notify_over_slack }}
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "🚀 Deployment triggered",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Deployment Notification*\n• Environment: ${{ github.event.inputs.deployment_environment }}\n• Version: ${{ github.event.inputs.version_tag }}\n• Reason: ${{ github.event.inputs.deployment_message }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_DEPLOYMENT_WEBHOOK }}
