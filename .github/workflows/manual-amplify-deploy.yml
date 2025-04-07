@@ -40,9 +40,6 @@ jobs:
             "staging")
               webhook=$STAGING_WEBHOOK
               ;;
-            "sandbox")
-              webhook=$SANDBOX_WEBHOOK
-              ;;
             "production")
               webhook=$PRODUCTION_WEBHOOK
               ;;
