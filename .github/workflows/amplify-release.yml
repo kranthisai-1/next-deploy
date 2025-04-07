@@ -44,9 +44,12 @@ jobs:
   deploy:
     name: Trigger Amplify Deployment
     needs: release
-    if: ${{ needs.release.outputs.version != '' }}
     runs-on: ubuntu-latest
+
     steps:
+      - name: Echo deployment start
+        run: echo "Triggering Amplify deployment after release..."
+
       - name: Trigger Amplify webhook
         run: |
           curl -X POST \
