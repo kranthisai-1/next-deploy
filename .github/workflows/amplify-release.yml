@@ -43,11 +43,11 @@ jobs:
 
           if echo "$RELEASE_OUTPUT" | grep -q "Published release"; then
             version=$(echo "$RELEASE_OUTPUT" | grep -oP 'Published release \K([0-9]+\.[0-9]+\.[0-9]+)')
-            echo "✅ Published version: $version"
+            echo "Published version: $version"
             echo "released=true" >> "$GITHUB_OUTPUT"
             echo "version=$version" >> "$GITHUB_OUTPUT"
           else
-            echo "ℹ️ No new version published."
+            echo "No new version published."
             echo "released=false" >> "$GITHUB_OUTPUT"
           fi
 
