@@ -27,9 +27,9 @@ jobs:
     steps:
       - name: Echo selected values
         run: |
-          echo "📦 Deploying to: ${{ inputs.deployment_environment }}"
-          echo "📝 Message: ${{ inputs.deployment_message }}"
-          echo "🔔 Notify Slack: ${{ inputs.should_notify_over_slack }}"
+          echo "Deploying to: ${{ inputs.deployment_environment }}"
+          echo "Message: ${{ inputs.deployment_message }}"
+          echo "Notify Slack: ${{ inputs.should_notify_over_slack }}"
 
       - name: Trigger Amplify webhook
         env:
