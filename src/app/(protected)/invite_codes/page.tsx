@@ -45,7 +45,6 @@ export default function InviteCodes() {
 
   const fetchInviteCodes = async () => {
     setIsLoading(true);
-    setIsLoading(true);
     try {
       const response: InviteCodesPaginatedResponse = await handleResponse(
         api.authenticatedGet(`/internal/invites`, {
