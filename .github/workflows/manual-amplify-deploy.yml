@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version_tag:
-        description: "Tag to deploy (e.g., v1.2.3)"
+        description: "Tag to deploy (e.g., v1.0.24)"
         required: true
       deployment_environment:
         description: "Target environment"
@@ -16,8 +16,8 @@ on:
       deployment_message:
         description: "Deployment reason"
         required: false
-        default: "Manual deployment triggered"
-      should_notify_over_slack:
+        default: "Manual tag deployment"
+      should_notify_slack:
         description: "Send Slack notification?"
         required: false
         default: true
@@ -29,28 +29,35 @@ jobs:
     environment: ${{ github.event.inputs.deployment_environment }}
     
     steps:
-      - name: Validate inputs
+      - name: Initial Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Validate tag existence
         run: |
-          if ! git ls-remote --tags origin refs/tags/${{ github.event.inputs.version_tag }}; then
+          git fetch --tags --force
+          if ! git show-ref --tags "refs/tags/${{ github.event.inputs.version_tag }}"; then
             echo "::error::Tag ${{ github.event.inputs.version_tag }} does not exist!"
             exit 1
           fi
+          echo "✅ Tag verification passed: ${{ github.event.inputs.version_tag }}"
 
-      - name: Checkout tag
+      - name: Full Checkout of Tag
         uses: actions/checkout@v4
         with:
           ref: refs/tags/${{ github.event.inputs.version_tag }}
-          fetch-depth: 0  # Required for full commit history
+          fetch-depth: 0  # Get full commit history
 
-      - name: Verify tag authenticity
+      - name: Verify Tag Authenticity
         run: |
-          git verify-tag ${{ github.event.inputs.version_tag }} || {
-            echo "::error::Tag verification failed!"
+          if ! git verify-tag ${{ github.event.inputs.version_tag }}; then
+            echo "::error::Tag verification failed! Tag might be unsigned or tampered with."
             exit 1
-          }
-          echo "✅ Validated signed tag: ${{ github.event.inputs.version_tag }}"
+          fi
+          echo "🔐 Tag cryptographically verified: ${{ github.event.inputs.version_tag }}"
 
-      - name: Set up webhook URL
+      - name: Set Up Webhook URL
         id: webhook
         run: |
           case "${{ github.event.inputs.deployment_environment }}" in
@@ -61,12 +68,12 @@ jobs:
               echo "url=${{ secrets.AMPLIFY_PROD_WEBHOOK }}" >> $GITHUB_OUTPUT
               ;;
             *)
-              echo "::error::Invalid environment"
+              echo "::error::Invalid environment specified"
               exit 1
               ;;
           esac
 
-      - name: Trigger Amplify deployment
+      - name: Trigger Amplify Deployment
         run: |
           curl -X POST \
             -H "Content-Type: application/json" \
@@ -77,20 +84,21 @@ jobs:
               }
             }' \
             "${{ steps.webhook.outputs.url }}"
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_DEPLOYMENT_WEBHOOK }}
 
-      - name: Notify Slack
-        if: ${{ github.event.inputs.should_notify_over_slack }}
+      - name: Send Slack Notification
+        if: ${{ github.event.inputs.should_notify_slack }}
         uses: slackapi/slack-github-action@v1
         with:
           payload: |
             {
-              "text": "🚀 Deployment triggered",
               "blocks": [
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Deployment Notification*\n• Environment: ${{ github.event.inputs.deployment_environment }}\n• Version: ${{ github.event.inputs.version_tag }}\n• Reason: ${{ github.event.inputs.deployment_message }}"
+                    "text": "🚀 *New Deployment* \n*Environment:* ${{ github.event.inputs.deployment_environment }}\n*Version:* ${{ github.event.inputs.version_tag }}\n*Initiated by:* @${{ github.actor }}\n*Reason:* ${{ github.event.inputs.deployment_message }}"
                   }
                 }
               ]
