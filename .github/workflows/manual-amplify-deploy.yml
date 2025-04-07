@@ -60,14 +60,12 @@ jobs:
 
       - name: Trigger Amplify Build for Tag
         run: |
-          curl -X POST \
-            -H "Content-Type: application/json" \
-            -d "{
-              \"ref\": \"refs/tags/${{ inputs.version_tag }}\",
-              \"head_commit\": {
-                \"id\": \"${{ github.sha }}\",
-                \"message\": \"${{ inputs.deployment_message }}\"
-              },
-              \"version_tag\": \"${{ inputs.version_tag }}\"
-            }" \
-            "${{ steps.webhook.outputs.url }}"
+         curl -X POST \
+          -H "Content-Type: application/json" \
+          -d "{
+             \"clientMetadata\": {
+             \"version_tag\": \"${{ inputs.version_tag }}\"
+              }
+          }" \
+         "${{ steps.webhook.outputs.url }}"
+
