@@ -1,9 +1,9 @@
-name: Create Release
+name: Create Release and Deploy to Staging
 
 on:
   push:
     branches:
-      - main
+      - main  # triggers when any branch is merged into main
 
 permissions:
   contents: write
@@ -41,16 +41,14 @@ jobs:
             echo "version=$(cat version.txt)" >> "$GITHUB_OUTPUT"
           fi
 
-  deploy:
-    name: Trigger Amplify Deployment
+  deploy-staging:
+    name: Deploy to Amplify (Staging)
     needs: release
     runs-on: ubuntu-latest
+    if: ${{ needs.release.outputs.version != '' }}  # only deploy if semantic-release created a new version
 
     steps:
-      - name: Echo deployment start
-        run: echo "Triggering Amplify deployment after release..."
-
-      - name: Trigger Amplify webhook
+      - name: Trigger Amplify Staging webhook
         run: |
           curl -X POST \
             -H "Content-Type: application/json" \
