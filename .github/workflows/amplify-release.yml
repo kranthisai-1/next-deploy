@@ -1,67 +1,66 @@
-name: Manual Deploy From Tag
+name: Create Release and Deploy to Staging
 
 on:
-  workflow_dispatch:
-    inputs:
-      version_tag:
-        description: 'Tag to deploy (e.g., v1.2.3)'
-        required: true
-      deployment_environment:
-        description: 'Target environment'
-        required: true
-        type: choice
-        options:
-          - staging
-          - production
-      deployment_message:
-        description: 'Why are you deploying?'
-        required: false
-        default: 'Manual deploy'
-      should_notify_over_slack:
-        description: 'Notify Slack?'
-        required: false
-        default: true
-        type: boolean
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  packages: write
+  issues: write
+  pull-requests: write
 
 jobs:
-  deploy:
+  release:
+    name: Release
     runs-on: ubuntu-latest
 
-    env:
-      STAGING_WEBHOOK: "https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=491b16b6-4c4b-4690-ba80-3e4dcf40a4d4&token=HoP06RMo7z7VPwCznlDYrfSHdqBcPTCnMWgEybr9A"
-      PRODUCTION_WEBHOOK: "https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=da0ac255-2976-48ec-a99b-be6397caf298&token=GD0zBA1bAAFOlD87jT3KMJik8ylM0J5Nsex3OUNIOg"
+    outputs:
+      released: ${{ steps.semantic.outputs.released }}
+      version: ${{ steps.semantic.outputs.version }}
 
     steps:
-      - name: Checkout tag
+      - name: Checkout repo
         uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          ref: ${{ inputs.version_tag }}
+          node-version: 20.11.1
 
-      - name: Confirm tag content
-        run: |
-          echo "✅ Checked out tag: ${{ inputs.version_tag }}"
-          git log -1 --oneline
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Select webhook URL
-        id: webhook
+      - name: Run semantic-release and extract version
+        id: semantic
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          case "${{ inputs.deployment_environment }}" in
-            "staging")
-              echo "url=${STAGING_WEBHOOK}" >> "$GITHUB_OUTPUT"
-              ;;
-            "production")
-              echo "url=${PRODUCTION_WEBHOOK}" >> "$GITHUB_OUTPUT"
-              ;;
-            *)
-              echo "Unsupported environment"
-              exit 1
-              ;;
-          esac
+          RELEASE_OUTPUT=$(npx semantic-release || true)
 
-      - name: Trigger Amplify build
+          echo "$RELEASE_OUTPUT"
+
+          if echo "$RELEASE_OUTPUT" | grep -q "Published release"; then
+            version=$(echo "$RELEASE_OUTPUT" | grep -oP 'Published release \K([0-9]+\.[0-9]+\.[0-9]+)')
+            echo "Published version: $version"
+            echo "released=true" >> "$GITHUB_OUTPUT"
+            echo "version=$version" >> "$GITHUB_OUTPUT"
+          else
+            echo "No new version published."
+            echo "released=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  deploy-staging:
+    name: Deploy to Amplify (Staging)
+    needs: release
+    runs-on: ubuntu-latest
+    if: ${{ needs.release.outputs.released == 'true' }}
+
+    steps:
+      - name: Trigger Amplify Staging webhook
         run: |
-          echo "🚀 Triggering Amplify build for tag ${{ inputs.version_tag }} on env ${{ inputs.deployment_environment }}..."
           curl -X POST \
             -H "Content-Type: application/json" \
             -d '{}' \
-            "${{ steps.webhook.outputs.url }}"
+            'https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=491b16b6-4c4b-4690-ba80-3e4dcf40a4d4&token=HoP06RMo7z7VPwCznlDYrfSHdqBcPTCnMWgEybr9A'

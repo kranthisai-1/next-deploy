@@ -4,22 +4,21 @@ on:
   workflow_dispatch:
     inputs:
       version_tag:
-        description: 'Tag to deploy (e.g., v1.2.3)'
+        description: "Tag to deploy (e.g., v1.2.3)"
         required: true
       deployment_environment:
-        description: 'Target environment'
+        description: "Target environment"
         required: true
         type: choice
         options:
           - staging
-          - sandbox
           - production
       deployment_message:
-        description: 'Why are you deploying?'
+        description: "Why are you deploying?"
         required: false
-        default: 'Manual deploy'
+        default: "Manual deploy"
       should_notify_over_slack:
-        description: 'Notify Slack?'
+        description: "Notify Slack?"
         required: false
         default: true
         type: boolean
@@ -29,20 +28,19 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      STAGING_WEBHOOK: "https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=staging_id&token=staging_token"
-      PRODUCTION_WEBHOOK: "https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=prod_id&token=prod_token"
+      STAGING_WEBHOOK: "https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=491b16b6-4c4b-4690-ba80-3e4dcf40a4d4&token=HoP06RMo7z7VPwCznlDYrfSHdqBcPTCnMWgEybr9A"
+      PRODUCTION_WEBHOOK: "https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=da0ac255-2976-48ec-a99b-be6397caf298&token=GD0zBA1bAAFOlD87jT3KMJik8ylM0J5Nsex3OUNIOg"
 
     steps:
-      - name: Checkout repo
+      - name: Checkout tag
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Important to fetch all tags
+          ref: ${{ inputs.version_tag }}
 
-      - name: Create deploy branch from tag
+      - name: Confirm tag content
         run: |
-          git fetch --tags
-          git checkout "tags/${{ inputs.version_tag }}" -b "build/${{ inputs.version_tag }}"
-          git push origin "build/${{ inputs.version_tag }}"
+          echo "✅ Checked out tag: ${{ inputs.version_tag }}"
+          git log -1 --oneline
 
       - name: Select webhook URL
         id: webhook
@@ -62,13 +60,8 @@ jobs:
 
       - name: Trigger Amplify build
         run: |
-          echo "Triggering Amplify build for branch build/${{ inputs.version_tag }}..."
+          echo "🚀 Triggering Amplify build for tag ${{ inputs.version_tag }} on env ${{ inputs.deployment_environment }}..."
           curl -X POST \
             -H "Content-Type: application/json" \
             -d '{}' \
             "${{ steps.webhook.outputs.url }}"
-
-      # Optional: Cleanup deploy branch (if you don't want to keep it)
-      # - name: Delete deploy branch
-      #   run: |
-      #     git push origin --delete "build/${{ inputs.version_tag }}"
