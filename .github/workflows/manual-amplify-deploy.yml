@@ -4,8 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       deployment_environment:
-        description: "Environment (staging, production)"
+        description: "Target environment"
         required: true
+        type: choice
+        options:
+          - staging
+          - sandbox
+          - production
       deployment_message:
         description: "Why are you deploying?"
         required: false
@@ -20,15 +25,32 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Echo selected tag
+      - name: Echo selected values
         run: |
-          echo "Deploying version: ${{ github.ref_name }}"
-          echo "Deployment environment: ${{ inputs.deployment_environment }}"
-          echo "Message: ${{ inputs.deployment_message }}"
+          echo "📦 Deploying to: ${{ inputs.deployment_environment }}"
+          echo "📝 Message: ${{ inputs.deployment_message }}"
+          echo "🔔 Notify Slack: ${{ inputs.should_notify_over_slack }}"
 
       - name: Trigger Amplify webhook
+        env:
+          STAGING_WEBHOOK: "https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=STAGING_ID&token=STAGING_TOKEN"
+          SANDBOX_WEBHOOK: "https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=SANDBOX_ID&token=SANDBOX_TOKEN"
+          PRODUCTION_WEBHOOK: "https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=PROD_ID&token=PROD_TOKEN"
         run: |
+          case "${{ inputs.deployment_environment }}" in
+            "staging")
+              webhook=$STAGING_WEBHOOK
+              ;;
+            "sandbox")
+              webhook=$SANDBOX_WEBHOOK
+              ;;
+            "production")
+              webhook=$PRODUCTION_WEBHOOK
+              ;;
+          esac
+
+          echo "🚀 Triggering Amplify build for ${{ inputs.deployment_environment }}..."
           curl -X POST \
             -H "Content-Type: application/json" \
             -d '{}' \
-            'https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=491b16b6-4c4b-4690-ba80-3e4dcf40a4d4&token=HoP06RMo7z7VPwCznlDYrfSHdqBcPTCnMWgEybr9A'
+            "$webhook"
