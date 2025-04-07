@@ -1,0 +1,37 @@
+name: Create Release
+
+on:
+  push:
+    branches:
+      - main
+  repository_dispatch:
+    types: [semantic-release]
+
+permissions:
+  packages: write
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.release.outputs.version }}
+    steps:
+      - name: Create Release
+        id: release
+        uses: todaypay/workflows/semantic-release@main
+
+  deploy:
+    needs:
+      - release
+    if: ${{ needs.release.outputs.version != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Amplify webhook
+        run: |
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -d '{}' \
+            'https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=YOUR_WEBHOOK_ID&token=YOUR_WEBHOOK_TOKEN'
