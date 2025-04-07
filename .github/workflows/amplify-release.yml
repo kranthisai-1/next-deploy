@@ -45,7 +45,7 @@ jobs:
     name: Deploy to Amplify (Staging)
     needs: release
     runs-on: ubuntu-latest
-    if: ${{ needs.release.outputs.version != '' }}  # only deploy if semantic-release created a new version
+    if: ${{ needs.release.outputs.version }}
 
     steps:
       - name: Trigger Amplify Staging webhook
