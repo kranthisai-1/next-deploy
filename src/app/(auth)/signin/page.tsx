@@ -49,7 +49,7 @@ export default function Signin() {
       ) : (
         <div className="bg-white shadow-lg rounded-lg p-8 w-[550px] h-[430px] mt-[-350px]">
           <div className="logo mt-3 ml-[30%]">
-            vvvvvvvvvvvvvvvvvvvv1111111111
+            vvvvvvvvvvvvvvvvvvvv222222222
           </div>
           <div className="flex justify-center mt-[140px] pl-2">
             <GoogleLogin
