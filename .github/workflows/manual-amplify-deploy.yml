@@ -33,9 +33,8 @@ jobs:
 
       - name: Trigger Amplify webhook
         env:
-          STAGING_WEBHOOK: "https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=STAGING_ID&token=STAGING_TOKEN"
-          SANDBOX_WEBHOOK: "https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=SANDBOX_ID&token=SANDBOX_TOKEN"
-          PRODUCTION_WEBHOOK: "https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=PROD_ID&token=PROD_TOKEN"
+          STAGING_WEBHOOK: "https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=491b16b6-4c4b-4690-ba80-3e4dcf40a4d4&token=HoP06RMo7z7VPwCznlDYrfSHdqBcPTCnMWgEybr9A"
+          PRODUCTION_WEBHOOK: "https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=da0ac255-2976-48ec-a99b-be6397caf298&token=GD0zBA1bAAFOlD87jT3KMJik8ylM0J5Nsex3OUNIOg"
         run: |
           case "${{ inputs.deployment_environment }}" in
             "staging")
