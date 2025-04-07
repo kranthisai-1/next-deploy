@@ -4,17 +4,17 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version tag'
+        description: "Version tag"
         required: true
       deployment_environment:
-        description: 'Environment (staging, production)'
+        description: "Environment (staging, production)"
         required: true
       deployment_message:
-        description: 'Why are you deploying?'
+        description: "Why are you deploying?"
         required: false
-        default: 'Manual deploy'
+        default: "Manual deploy"
       should_notify_over_slack:
-        description: 'Notify Slack?'
+        description: "Notify Slack?"
         required: false
         default: true
         type: boolean
