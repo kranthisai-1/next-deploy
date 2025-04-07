@@ -37,9 +37,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           npx semantic-release
+
+          # Always set version output (empty or actual)
+          version=""
           if [ -f version.txt ]; then
-            echo "version=$(cat version.txt)" >> "$GITHUB_OUTPUT"
+            version=$(cat version.txt)
           fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
 
   deploy-staging:
     name: Deploy to Amplify (Staging)
