@@ -1,0 +1,31 @@
+name: Manual Amplify Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag'
+        required: true
+      deployment_environment:
+        description: 'Environment (staging, production)'
+        required: true
+      deployment_message:
+        description: 'Why are you deploying?'
+        required: false
+        default: 'Manual deploy'
+      should_notify_over_slack:
+        description: 'Notify Slack?'
+        required: false
+        default: true
+        type: boolean
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Amplify webhook
+        run: |
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -d '{}' \
+            'https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=491b16b6-4c4b-4690-ba80-3e4dcf40a4d4&token=HoP06RMo7z7VPwCznlDYrfSHdqBcPTCnMWgEybr9A'
