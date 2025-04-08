@@ -50,9 +50,9 @@ jobs:
       - name: Trigger Amplify
         run: |
           if [[ "${{ github.event.inputs.deployment_environment }}" == "production" ]]; then
-            WEBHOOK="https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=da0ac255-2976-48ec-a99b-be6397caf298&token=GD0zBA1bAAFOlD87jT3KMJik8ylM0J5Nsex3OUNIOg"
+            WEBHOOK="https://webhooks.amplify.us-east-1.amazonaws.com/..." # <-- Replace with actual production webhook
           else
-            WEBHOOK="https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=491b16b6-4c4b-4690-ba80-3e4dcf40a4d4&token=HoP06RMo7z7VPwCznlDYrfSHdqBcPTCnMWgEybr9A"
+            WEBHOOK="https://webhooks.amplify.us-east-1.amazonaws.com/..." # <-- Replace with actual staging webhook
           fi
 
           echo "Triggering deployment via webhook: $WEBHOOK"
@@ -61,5 +61,4 @@ jobs:
             -H "Content-Type: application/json" \
             -d "$(jq -n \
               --arg tag "${{ github.event.inputs.version_tag }}" \
-              --arg commit "$(git rev-parse HEAD)" \
-              '{clientMetadata: {version_tag: $tag, commit: $commit}}')"
+              '{env: {CLIENT_METADATA_VERSION_TAG: $tag}}')"
