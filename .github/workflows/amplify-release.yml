@@ -1,4 +1,4 @@
-name: Create Release
+name: Create Release and Deploy to Staging
 
 on:
   push:
@@ -17,7 +17,8 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      version: ${{ steps.get_version.outputs.version }}
+      released: ${{ steps.semantic.outputs.released }}
+      version: ${{ steps.semantic.outputs.version }}
 
     steps:
       - name: Checkout repo
@@ -31,26 +32,32 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run semantic-release
-        id: get_version
+      - name: Run semantic-release and extract version
+        id: semantic
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          npx semantic-release
-          if [ -f version.txt ]; then
-            echo "version=$(cat version.txt)" >> "$GITHUB_OUTPUT"
+          RELEASE_OUTPUT=$(npx semantic-release || true)
+
+          echo "$RELEASE_OUTPUT"
+
+          if echo "$RELEASE_OUTPUT" | grep -q "Published release"; then
+            version=$(echo "$RELEASE_OUTPUT" | grep -oP 'Published release \K([0-9]+\.[0-9]+\.[0-9]+)')
+            echo "Published version: $version"
+            echo "released=true" >> "$GITHUB_OUTPUT"
+            echo "version=$version" >> "$GITHUB_OUTPUT"
+          else
+            echo "No new version published."
+            echo "released=false" >> "$GITHUB_OUTPUT"
           fi
 
-  deploy:
-    name: Trigger Amplify Deployment
+  deploy-staging:
+    name: Deploy to Amplify (Staging)
     needs: release
     runs-on: ubuntu-latest
 
     steps:
-      - name: Echo deployment start
-        run: echo "Triggering Amplify deployment after release..."
-
-      - name: Trigger Amplify webhook
+      - name: Trigger Amplify Staging webhook
         run: |
           curl -X POST \
             -H "Content-Type: application/json" \

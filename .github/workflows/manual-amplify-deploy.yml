@@ -1,34 +1,65 @@
-name: Manual Amplify Deploy
+name: Manual Tag Deployment
 
 on:
   workflow_dispatch:
     inputs:
-      deployment_environment:
-        description: "Environment (staging, production)"
+      version_tag:
+        description: "Tag to deploy (e.g., v1.2.3)"
         required: true
+      deployment_environment:
+        description: "Target environment"
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
       deployment_message:
-        description: "Why are you deploying?"
+        description: "Deployment reason"
         required: false
-        default: "Manual deploy"
-      should_notify_over_slack:
-        description: "Notify Slack?"
-        required: false
-        default: true
-        type: boolean
+        default: "Manual deployment triggered"
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.deployment_environment }}
     steps:
-      - name: Echo selected tag
+      - name: Validate inputs
         run: |
-          echo "Deploying version: ${{ github.ref_name }}"
-          echo "Deployment environment: ${{ inputs.deployment_environment }}"
-          echo "Message: ${{ inputs.deployment_message }}"
+          if ! git ls-remote --tags origin refs/tags/${{ github.event.inputs.version_tag }}; then
+            echo "::error::Tag ${{ github.event.inputs.version_tag }} does not exist!"
+            exit 1
+          fi
 
-      - name: Trigger Amplify webhook
+      - name: Checkout target branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.deployment_environment }}
+
+      - name: Create .env.deploy
         run: |
-          curl -X POST \
-            -H "Content-Type: application/json" \
-            -d '{}' \
-            'https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=491b16b6-4c4b-4690-ba80-3e4dcf40a4d4&token=HoP06RMo7z7VPwCznlDYrfSHdqBcPTCnMWgEybr9A'
+          echo "VERSION_TAG=${{ github.event.inputs.version_tag }}" > .env.deploy
+          echo "DEPLOYMENT_MESSAGE=${{ github.event.inputs.deployment_message }}" >> .env.deploy
+
+      - name: Commit and push .env.deploy
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add .env.deploy
+          git commit -m "chore: update .env.deploy for ${{ github.event.inputs.version_tag }}"
+          git push origin ${{ github.event.inputs.deployment_environment }}
+
+      - name: Set webhook URL
+        id: webhook
+        run: |
+          if [ "${{ github.event.inputs.deployment_environment }}" = "staging" ]; then
+            echo "url=https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=491b16b6-4c4b-4690-ba80-3e4dcf40a4d4&token=HoP06RMo7z7VPwCznlDYrfSHdqBcPTCnMWgEybr9A" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event.inputs.deployment_environment }}" = "production" ]; then
+            echo "url=https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=da0ac255-2976-48ec-a99b-be6397caf298&token=GD0zBA1bAAFOlD87jT3KMJik8ylM0J5Nsex3OUNIOg" >> $GITHUB_OUTPUT
+          else
+            echo "::error::Invalid environment"
+            exit 1
+          fi
+
+      - name: Trigger Amplify deployment
+        run: |
+          curl -X POST "${{ steps.webhook.outputs.url }}"
