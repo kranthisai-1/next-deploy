@@ -71,23 +71,3 @@ jobs:
                 "commit": "'"$(git rev-parse HEAD)"'"
               }
             }'
-
-      - name: Slack Notification
-        if: ${{ github.event.inputs.notify_slack }}
-        uses: slackapi/slack-github-action@v1
-        with:
-          payload: |
-            {
-              "text": "Deployment of ${{ github.event.inputs.version_tag }} to ${{ github.event.inputs.deployment_environment }}",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*🚀 New Deployment*\\n• *Environment:* ${{ github.event.inputs.deployment_environment }}\\n• *Tag:* ${{ github.event.inputs.version_tag }}\\n• *By:* @${{ github.actor }}"
-                  }
-                }
-              ]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
