@@ -55,7 +55,6 @@ jobs:
     name: Deploy to Amplify (Staging)
     needs: release
     runs-on: ubuntu-latest
-    if: ${{ needs.release.outputs.released == 'true' }}
 
     steps:
       - name: Trigger Amplify Staging webhook
