@@ -3,6 +3,24 @@
 
 ### Bug Fixes
 
+* fies ([4e16cbb](https://github.com/kranthisai-1/next-deploy/commit/4e16cbbd2949a858f387827423053b673442891e))
+* fixes ([549ac19](https://github.com/kranthisai-1/next-deploy/commit/549ac191995e9abfc18570d7a4df0122b84f3cc0))
+* fixes ([1640246](https://github.com/kranthisai-1/next-deploy/commit/16402465388faf5cd4b3bb32ff08624e36ec31e8))
+* fixes ([463956d](https://github.com/kranthisai-1/next-deploy/commit/463956db75cd8d5636a6d9e379ecdf55dcfc1065))
+* fixes ([7c695e6](https://github.com/kranthisai-1/next-deploy/commit/7c695e6fdf1eeb741147ae1ed8869881dc1e3b40))
+* fixes ([0664c8c](https://github.com/kranthisai-1/next-deploy/commit/0664c8c8921f7f6de7dfa1d3101c8edb645f88da))
+* fixes ([e89bcb9](https://github.com/kranthisai-1/next-deploy/commit/e89bcb97f93a1e7b5dc04ba8474b6a126d7096d3))
+* fixes ([45a62d2](https://github.com/kranthisai-1/next-deploy/commit/45a62d2d016adedf0abd2344ae531d25d4c5c2b5))
+* fixes ([b1e678b](https://github.com/kranthisai-1/next-deploy/commit/b1e678b56ee2da05d42bcd77211422bf2ae72349))
+* fixes ([492678b](https://github.com/kranthisai-1/next-deploy/commit/492678b80953d2f6f658adc74b790ce115cbd2f8))
+* fixes ([77cd80a](https://github.com/kranthisai-1/next-deploy/commit/77cd80acf966c8626b07f3160d7b61b45f17fd53))
+* fixes ([2cfb764](https://github.com/kranthisai-1/next-deploy/commit/2cfb7641cd0f8ab4a20d9a0d1b13ddd81ea90b78))
+
+## [1.0.34](https://github.com/kranthisai-1/next-deploy/compare/v1.0.33...v1.0.34) (2025-04-08)
+
+
+### Bug Fixes
+
 * fixes ([1640246](https://github.com/kranthisai-1/next-deploy/commit/16402465388faf5cd4b3bb32ff08624e36ec31e8))
 * fixes ([463956d](https://github.com/kranthisai-1/next-deploy/commit/463956db75cd8d5636a6d9e379ecdf55dcfc1065))
 * fixes ([7c695e6](https://github.com/kranthisai-1/next-deploy/commit/7c695e6fdf1eeb741147ae1ed8869881dc1e3b40))
