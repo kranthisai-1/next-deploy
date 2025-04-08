@@ -29,6 +29,8 @@ jobs:
     steps:
       - name: Validate inputs
         run: |
+          git init
+          git remote add origin https://github.com/${{ github.repository }}.git
           if ! git ls-remote --tags origin refs/tags/${{ github.event.inputs.version_tag }}; then
             echo "::error::Tag ${{ github.event.inputs.version_tag }} does not exist!"
             exit 1
