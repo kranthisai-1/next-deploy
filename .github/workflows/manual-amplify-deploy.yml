@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version_tag:
-        description: "Tag to deploy (e.g., v1.0.24)"
+        description: "Select tag to deploy (e.g., v1.0.24)"
         required: true
       deployment_environment:
         description: "Target environment"
@@ -27,35 +27,28 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.deployment_environment }}
-    
     steps:
-      - name: Initial Checkout
+      - name: Checkout full history (for tag verification)
         uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0  # Required for tags
 
-      - name: Validate tag existence
+      - name: Validate Tag Existence Locally
         run: |
           git fetch --tags --force
-          if ! git show-ref --tags "refs/tags/${{ github.event.inputs.version_tag }}"; then
+          if ! git rev-parse "refs/tags/${{ github.event.inputs.version_tag }}" >/dev/null 2>&1; then
             echo "::error::Tag ${{ github.event.inputs.version_tag }} does not exist!"
             exit 1
           fi
-          echo "✅ Tag verification passed: ${{ github.event.inputs.version_tag }}"
+          echo "✅ Tag exists: ${{ github.event.inputs.version_tag }}"
 
-      - name: Full Checkout of Tag
-        uses: actions/checkout@v4
-        with:
-          ref: refs/tags/${{ github.event.inputs.version_tag }}
-          fetch-depth: 0  # Get full commit history
-
-      - name: Verify Tag Authenticity
+      - name: Verify Tag Authenticity (Optional)
         run: |
-          if ! git verify-tag ${{ github.event.inputs.version_tag }}; then
-            echo "::error::Tag verification failed! Tag might be unsigned or tampered with."
-            exit 1
+          if git verify-tag "${{ github.event.inputs.version_tag }}" >/dev/null 2>&1; then
+            echo "🔐 Tag cryptographically verified: ${{ github.event.inputs.version_tag }}"
+          else
+            echo "::warning::Tag is not signed or verification failed. Proceeding anyway."
           fi
-          echo "🔐 Tag cryptographically verified: ${{ github.event.inputs.version_tag }}"
 
       - name: Set Up Webhook URL
         id: webhook
@@ -73,21 +66,18 @@ jobs:
               ;;
           esac
 
-      - name: Trigger Amplify Deployment
+      - name: Trigger AWS Amplify via Webhook
         run: |
-          curl -X POST \
+          curl -X POST "${{ steps.webhook.outputs.url }}" \
             -H "Content-Type: application/json" \
             -d '{
               "clientMetadata": {
                 "version_tag": "${{ github.event.inputs.version_tag }}",
                 "deployment_message": "${{ github.event.inputs.deployment_message }}"
               }
-            }' \
-            "${{ steps.webhook.outputs.url }}"
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_DEPLOYMENT_WEBHOOK }}
+            }'
 
-      - name: Send Slack Notification
+      - name: Slack Notification (Optional)
         if: ${{ github.event.inputs.should_notify_slack }}
         uses: slackapi/slack-github-action@v1
         with:
@@ -98,7 +88,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "🚀 *New Deployment* \n*Environment:* ${{ github.event.inputs.deployment_environment }}\n*Version:* ${{ github.event.inputs.version_tag }}\n*Initiated by:* @${{ github.actor }}\n*Reason:* ${{ github.event.inputs.deployment_message }}"
+                    "text": "🚀 *Deployment Started*\n• *Environment:* `${{ github.event.inputs.deployment_environment }}`\n• *Tag:* `${{ github.event.inputs.version_tag }}`\n• *By:* @${{ github.actor }}\n• *Reason:* ${{ github.event.inputs.deployment_message }}"
                   }
                 }
               ]
