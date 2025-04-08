@@ -51,33 +51,33 @@ jobs:
         run: |
           echo "CLIENT_METADATA_VERSION_TAG=${{ github.event.inputs.version_tag }}" > .env.deploy
 
+      - name: Checkout to a new branch from the tag
+        run: |
+          git checkout -b temp-deploy-branch
+          
       - name: Commit .env.deploy and force-push tag
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
-          # Create a temp branch from the tag
-          git checkout -b temp-deploy-branch
-
-          echo "CLIENT_METADATA_VERSION_TAG=${{ github.event.inputs.version_tag }}" > .env.deploy
-
           git add .env.deploy
           git commit -m "chore: add .env.deploy for tag ${{ github.event.inputs.version_tag }}" || echo "No changes to commit"
-
+          
           # Re-tag and push
           git tag -f ${{ github.event.inputs.version_tag }}
           git push origin -f ${{ github.event.inputs.version_tag }}
 
-          # Optional: delete temp branch locally
+      - name: Delete temporary branch
+        run: |
           git checkout -
           git branch -D temp-deploy-branch
 
       - name: Trigger Amplify
         run: |
           if [[ "${{ github.event.inputs.deployment_environment }}" == "production" ]]; then
-              WEBHOOK="https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=da0ac255-2976-48ec-a99b-be6397caf298&token=GD0zBA1bAAFOlD87jT3KMJik8ylM0J5Nsex3OUNIOg"
+              WEBHOOK="https://webhooks.amplify.us-east-1.amazonaws.com/..."  # <-- Replace with production webhook
           else
-              WEBHOOK="https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=491b16b6-4c4b-4690-ba80-3e4dcf40a4d4&token=HoP06RMo7z7VPwCznlDYrfSHdqBcPTCnMWgEybr9A"
+              WEBHOOK="https://webhooks.amplify.us-east-1.amazonaws.com/..."  # <-- Replace with staging webhook
           fi
 
           echo "Triggering deployment via webhook: $WEBHOOK"
