@@ -61,8 +61,12 @@ jobs:
           git config user.email "github-actions@github.com"
 
           git add .env.deploy
-          git commit -m "chore: add .env.deploy for tag ${{ github.event.inputs.version_tag }}" || echo "No changes to commit"
-          
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: add .env.deploy for tag ${{ github.event.inputs.version_tag }}"
+          else
+            echo "No changes to commit"
+          fi
+
           # Re-tag and push
           git tag -f ${{ github.event.inputs.version_tag }}
           git push origin -f ${{ github.event.inputs.version_tag }}
