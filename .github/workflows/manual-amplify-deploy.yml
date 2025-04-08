@@ -66,6 +66,7 @@ jobs:
           curl -X POST "$WEBHOOK" \
             -H "Content-Type: application/json" \
             -d '{
+              "branch": "staging",
               "clientMetadata": {
                 "version_tag": "${{ github.event.inputs.version_tag }}",
                 "commit": "'"$(git rev-parse HEAD)"'"
