@@ -33,7 +33,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.deployment_environment }}
-    
     steps:
       - name: Get latest tags
         id: get-tags
@@ -55,15 +54,21 @@ jobs:
           fi
 
       - name: Trigger Amplify
-        env:
-          WEBHOOK: ${{ github.event.inputs.deployment_environment == 'production' && secrets.AMPLIFY_PROD_WEBHOOK || secrets.AMPLIFY_STAGING_WEBHOOK }}
         run: |
+          if [[ "${{ github.event.inputs.deployment_environment }}" == "production" ]]; then
+            WEBHOOK="https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=da0ac255-2976-48ec-a99b-be6397caf298&token=GD0zBA1bAAFOlD87jT3KMJik8ylM0J5Nsex3OUNIOg"
+          else
+            WEBHOOK="https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=491b16b6-4c4b-4690-ba80-3e4dcf40a4d4&token=HoP06RMo7z7VPwCznlDYrfSHdqBcPTCnMWgEybr9A"
+          fi
+
+          echo "Triggering deployment via webhook: $WEBHOOK"
+
           curl -X POST "$WEBHOOK" \
             -H "Content-Type: application/json" \
             -d '{
               "clientMetadata": {
                 "version_tag": "${{ github.event.inputs.version_tag }}",
-                "commit": "$(git rev-parse HEAD)"
+                "commit": "'"$(git rev-parse HEAD)"'"
               }
             }'
 
