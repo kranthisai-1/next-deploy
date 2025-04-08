@@ -18,21 +18,18 @@ on:
         required: false
         default: "Manual deployment triggered"
 
+permissions:
+  contents: write  # Needed for pushing to the repo
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.deployment_environment }}
 
     steps:
-      - name: Checkout repo with full history
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-
-      - name: Validate tag exists
+      - name: Validate inputs
         run: |
-          if ! git ls-remote --tags origin "refs/tags/${{ github.event.inputs.version_tag }}"; then
+          if ! git ls-remote --tags origin refs/tags/${{ github.event.inputs.version_tag }}; then
             echo "::error::Tag ${{ github.event.inputs.version_tag }} does not exist!"
             exit 1
           fi
@@ -41,7 +38,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.inputs.deployment_environment }}
-          fetch-depth: 0
 
       - name: Create .env.deploy
         run: |
@@ -52,6 +48,7 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@users.noreply.github.com"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
           git add .env.deploy
           git commit -m "chore: update .env.deploy for ${{ github.event.inputs.version_tag }}"
           git push origin ${{ github.event.inputs.deployment_environment }}
