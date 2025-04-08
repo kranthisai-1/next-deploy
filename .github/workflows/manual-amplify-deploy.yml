@@ -33,39 +33,39 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.deployment_environment }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: refs/tags/${{ github.event.inputs.version_tag }}
 
-      - name: Validate tag exists
-        run: |
-          if ! git rev-parse "refs/tags/${{ github.event.inputs.version_tag }}" >/dev/null 2>&1; then
-            echo "::error::Tag ${{ github.event.inputs.version_tag }} does not exist!"
-            exit 1
-          fi
-
-      - name: Add .env.deploy with tag info
+      - name: Create .env.deploy file with version
         run: |
           echo "CLIENT_METADATA_VERSION_TAG=${{ github.event.inputs.version_tag }}" > .env.deploy
-          echo "📝 Created .env.deploy with tag ${{ github.event.inputs.version_tag }}"
 
-      - name: Commit .env.deploy
+      - name: Commit and push .env.deploy with updated tag
         run: |
           git config user.name "github-actions"
-          git config user.email "github-actions@users.noreply.github.com"
+          git config user.email "github-actions@github.com"
+
           git add .env.deploy
           git commit -m "chore: add .env.deploy for tag ${{ github.event.inputs.version_tag }}"
-          git push origin HEAD:refs/tags/${{ github.event.inputs.version_tag }}
+
+          # Re-tag the current commit and force-push
+          git tag -f ${{ github.event.inputs.version_tag }}
+          git push origin -f ${{ github.event.inputs.version_tag }}
 
       - name: Trigger Amplify webhook
         run: |
           if [[ "${{ github.event.inputs.deployment_environment }}" == "production" ]]; then
-            WEBHOOK="https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=da0ac255-2976-48ec-a99b-be6397caf298&token=GD0zBA1bAAFOlD87jT3KMJik8ylM0J5Nsex3OUNIOg"  # Replace with prod webhook
+            WEBHOOK="https://webhooks.amplify.us-east-1.amazonaws.com/..." # Replace with real prod webhook
           else
-            WEBHOOK="https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=491b16b6-4c4b-4690-ba80-3e4dcf40a4d4&token=HoP06RMo7z7VPwCznlDYrfSHdqBcPTCnMWgEybr9A"  # Replace with staging webhook
+            WEBHOOK="https://webhooks.amplify.us-east-1.amazonaws.com/..." # Replace with real staging webhook
           fi
 
-          echo "🚀 Triggering Amplify deployment for tag ${{ github.event.inputs.version_tag }}..."
-          curl -X POST "$WEBHOOK"
+          echo "Triggering deployment via webhook: $WEBHOOK"
+          curl -X POST "$WEBHOOK" \
+            -H "Content-Type: application/json" \
+            -d '{}'
