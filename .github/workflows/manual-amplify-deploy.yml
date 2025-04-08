@@ -34,12 +34,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.deployment_environment }}
     steps:
-      - name: Get latest tags
-        id: get-tags
-        run: |
-          TAGS=$(git ls-remote --tags origin | awk -F/ '{print $3}' | sort -Vr | head -5 | jq -R -s -c 'split("\n") | map(select(. != ""))')
-          echo "latest_tags=$TAGS" >> $GITHUB_OUTPUT
-
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -65,10 +59,7 @@ jobs:
 
           curl -X POST "$WEBHOOK" \
             -H "Content-Type: application/json" \
-            -d '{
-              "branch": "staging",
-              "clientMetadata": {
-                "version_tag": "${{ github.event.inputs.version_tag }}",
-                "commit": "'"$(git rev-parse HEAD)"'"
-              }
-            }'
+            -d "$(jq -n \
+              --arg tag "${{ github.event.inputs.version_tag }}" \
+              --arg commit "$(git rev-parse HEAD)" \
+              '{clientMetadata: {version_tag: $tag, commit: $commit}}')"
