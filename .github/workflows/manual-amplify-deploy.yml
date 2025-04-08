@@ -4,88 +4,62 @@ on:
   workflow_dispatch:
     inputs:
       version_tag:
-        description: "Select tag to deploy"
+        description: "Tag to deploy (e.g., v1.2.3)"
         required: true
-        type: string
       deployment_environment:
         description: "Target environment"
         required: true
         type: choice
-        options: [staging, production]
-        default: "staging"
+        options:
+          - staging
+          - production
       deployment_message:
         description: "Deployment reason"
         required: false
-        default: "Manual deployment"
-      notify_slack:
-        description: "Send Slack notification?"
-        type: boolean
-        default: true
-
-env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-permissions:
-  contents: write
-  actions: read
+        default: "Manual deployment triggered"
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.deployment_environment }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: refs/tags/${{ github.event.inputs.version_tag }}
-
-      - name: Validate tag
+      - name: Validate inputs
         run: |
-          if ! git show-ref --tags "refs/tags/${{ github.event.inputs.version_tag }}"; then
-            echo "::error::Tag ${{ github.event.inputs.version_tag }} not found!"
+          if ! git ls-remote --tags origin refs/tags/${{ github.event.inputs.version_tag }}; then
+            echo "::error::Tag ${{ github.event.inputs.version_tag }} does not exist!"
             exit 1
           fi
 
-      - name: Create .env.deploy with version
-        run: |
-          echo "CLIENT_METADATA_VERSION_TAG=${{ github.event.inputs.version_tag }}" > .env.deploy
+      - name: Checkout target branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.deployment_environment }}
 
-      - name: Checkout to a new branch from the tag
+      - name: Create .env.deploy
         run: |
-          git checkout -b temp-deploy-branch
-          
-      - name: Commit .env.deploy and force-push tag
+          echo "VERSION_TAG=${{ github.event.inputs.version_tag }}" > .env.deploy
+          echo "DEPLOYMENT_MESSAGE=${{ github.event.inputs.deployment_message }}" >> .env.deploy
+
+      - name: Commit and push .env.deploy
         run: |
           git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-
+          git config user.email "github-actions@users.noreply.github.com"
           git add .env.deploy
-          if ! git diff --cached --quiet; then
-            git commit -m "chore: add .env.deploy for tag ${{ github.event.inputs.version_tag }}"
+          git commit -m "chore: update .env.deploy for ${{ github.event.inputs.version_tag }}"
+          git push origin ${{ github.event.inputs.deployment_environment }}
+
+      - name: Set webhook URL
+        id: webhook
+        run: |
+          if [ "${{ github.event.inputs.deployment_environment }}" = "staging" ]; then
+            echo "url=https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=491b16b6-4c4b-4690-ba80-3e4dcf40a4d4&token=HoP06RMo7z7VPwCznlDYrfSHdqBcPTCnMWgEybr9A" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event.inputs.deployment_environment }}" = "production" ]; then
+            echo "url=https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=da0ac255-2976-48ec-a99b-be6397caf298&token=GD0zBA1bAAFOlD87jT3KMJik8ylM0J5Nsex3OUNIOg" >> $GITHUB_OUTPUT
           else
-            echo "No changes to commit"
+            echo "::error::Invalid environment"
+            exit 1
           fi
 
-          # Re-tag and push
-          git tag -f ${{ github.event.inputs.version_tag }}
-          git push origin -f ${{ github.event.inputs.version_tag }}
-
-      - name: Delete temporary branch
+      - name: Trigger Amplify deployment
         run: |
-          git checkout -
-          git branch -D temp-deploy-branch
-
-      - name: Trigger Amplify
-        run: |
-          if [[ "${{ github.event.inputs.deployment_environment }}" == "production" ]]; then
-              WEBHOOK="https://webhooks.amplify.us-east-1.amazonaws.com/..."  # <-- Replace with production webhook
-          else
-              WEBHOOK="https://webhooks.amplify.us-east-1.amazonaws.com/..."  # <-- Replace with staging webhook
-          fi
-
-          echo "Triggering deployment via webhook: $WEBHOOK"
-
-          curl -X POST "$WEBHOOK" \
-            -H "Content-Type: application/json" \
-            -d '{}'
+          curl -X POST "${{ steps.webhook.outputs.url }}"
