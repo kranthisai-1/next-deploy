@@ -3,9 +3,6 @@ name: Manual Tag Deployment
 on:
   workflow_dispatch:
     inputs:
-      version_tag:
-        description: "Tag to deploy (e.g., v1.2.3)"
-        required: true
       deployment_environment:
         description: "Target environment"
         required: true
@@ -18,17 +15,24 @@ on:
         required: false
         default: "Manual deployment triggered"
 
+permissions:
+  contents: write
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.deployment_environment }}
+
     steps:
-      - name: Validate inputs
+      - name: Validate that a tag was selected
+        id: validate
         run: |
-          if ! git ls-remote --tags origin refs/tags/${{ github.event.inputs.version_tag }}; then
-            echo "::error::Tag ${{ github.event.inputs.version_tag }} does not exist!"
+          echo "GITHUB_REF=${GITHUB_REF}"
+          if [[ "${GITHUB_REF}" != refs/tags/* ]]; then
+            echo "::error::You must run this workflow from a tag."
             exit 1
           fi
+          echo "version_tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
       - name: Checkout target branch
         uses: actions/checkout@v4
@@ -37,15 +41,16 @@ jobs:
 
       - name: Create .env.deploy
         run: |
-          echo "VERSION_TAG=${{ github.event.inputs.version_tag }}" > .env.deploy
+          echo "VERSION_TAG=${{ steps.validate.outputs.version_tag }}" > .env.deploy
           echo "DEPLOYMENT_MESSAGE=${{ github.event.inputs.deployment_message }}" >> .env.deploy
 
-      - name: Commit and push .env.deploy
+      - name: Commit and push .env.deploy 
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@users.noreply.github.com"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
           git add .env.deploy
-          git commit -m "chore: update .env.deploy for ${{ github.event.inputs.version_tag }}"
+          git commit --allow-empty -m "chore: update .env.deploy for ${{ steps.validate.outputs.version_tag }}"
           git push origin ${{ github.event.inputs.deployment_environment }}
 
       - name: Set webhook URL
