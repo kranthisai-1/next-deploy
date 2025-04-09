@@ -38,15 +38,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           RELEASE_OUTPUT=$(npx semantic-release)
-
           echo "$RELEASE_OUTPUT"
-
           if echo "$RELEASE_OUTPUT" | grep -q "Published release"; then
             version=$(echo "$RELEASE_OUTPUT" | grep -oP 'Published release \K([0-9]+\.[0-9]+\.[0-9]+)')
             echo "Published version: $version"
             echo "released=true" >> "$GITHUB_OUTPUT"
             echo "version=$version" >> "$GITHUB_OUTPUT"
           else
+            echo "No valid commit for version release."
             echo "No new version published. Failing the workflow."
             exit 1
           fi
