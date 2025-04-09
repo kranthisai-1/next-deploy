@@ -51,7 +51,6 @@ export default function Signin() {
           <div>hello bro</div>
           <div>hello bro</div>
           <div>hello bro3 </div>
-          <div>hello bro34 </div>
           <div>hello bro3 </div>
           <div className="logo mt-3 ml-[30%]"></div>
           <div className="flex justify-center mt-[140px] pl-2">
