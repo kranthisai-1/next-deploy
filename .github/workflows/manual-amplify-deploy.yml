@@ -29,7 +29,7 @@ jobs:
         run: |
           echo "GITHUB_REF=${GITHUB_REF}"
           if [[ "${GITHUB_REF}" != refs/tags/* ]]; then
-            echo "::error::You must run this workflow from a tag (not a branch)."
+            echo "::error::You must run this workflow from a tag."
             exit 1
           fi
           echo "version_tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
@@ -44,7 +44,7 @@ jobs:
           echo "VERSION_TAG=${{ steps.validate.outputs.version_tag }}" > .env.deploy
           echo "DEPLOYMENT_MESSAGE=${{ github.event.inputs.deployment_message }}" >> .env.deploy
 
-      - name: Commit and push .env.deploy (allow empty)
+      - name: Commit and push .env.deploy 
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@users.noreply.github.com"
