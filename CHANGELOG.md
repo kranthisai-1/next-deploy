@@ -1,3 +1,11 @@
+## [1.2.11](https://github.com/kranthisai-1/next-deploy/compare/v1.2.10...v1.2.11) (2025-04-09)
+
+
+### Bug Fixes
+
+* nnjkvfdw ([01f8b51](https://github.com/kranthisai-1/next-deploy/commit/01f8b5184cb3ddaea61baafc0677307b8f97bbd7))
+* nnjkvfdwe ([83b045a](https://github.com/kranthisai-1/next-deploy/commit/83b045a4422027bec98edf5e8c4d77aa120326a7))
+
 ## [1.2.10](https://github.com/kranthisai-1/next-deploy/compare/v1.2.9...v1.2.10) (2025-04-09)
 
 
