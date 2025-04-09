@@ -34,7 +34,7 @@ jobs:
           fi
           echo "version_tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
-      - name: Checkout target branch
+      - name: Checkout environment branch
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.inputs.deployment_environment }}
@@ -53,18 +53,44 @@ jobs:
           git commit --allow-empty -m "chore: update .env.deploy for ${{ steps.validate.outputs.version_tag }}"
           git push origin ${{ github.event.inputs.deployment_environment }}
 
-      - name: Set webhook URL
-        id: webhook
+      - name: Trigger Amplify deployment
+        id: trigger
         run: |
           if [ "${{ github.event.inputs.deployment_environment }}" = "staging" ]; then
-            echo "url=https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=491b16b6-4c4b-4690-ba80-3e4dcf40a4d4&token=HoP06RMo7z7VPwCznlDYrfSHdqBcPTCnMWgEybr9A" >> $GITHUB_OUTPUT
-          elif [ "${{ github.event.inputs.deployment_environment }}" = "production" ]; then
-            echo "url=https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=da0ac255-2976-48ec-a99b-be6397caf298&token=GD0zBA1bAAFOlD87jT3KMJik8ylM0J5Nsex3OUNIOg" >> $GITHUB_OUTPUT
+            webhook="https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=491b16b6-4c4b-4690-ba80-3e4dcf40a4d4&token=HoP06RMo7z7VPwCznlDYrfSHdqBcPTCnMWgEybr9A"
           else
-            echo "::error::Invalid environment"
-            exit 1
+            webhook="https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=da0ac255-2976-48ec-a99b-be6397caf298&token=GD0zBA1bAAFOlD87jT3KMJik8ylM0J5Nsex3OUNIOg"
           fi
+          curl -s -X POST "$webhook"
 
-      - name: Trigger Amplify deployment
+      - name: Wait for Amplify deployment to complete
+        env:
+          AWS_REGION: us-east-1
         run: |
-          curl -X POST "${{ steps.webhook.outputs.url }}"
+          APP_ID="d1uwoew2a9382l" 
+          BRANCH_NAME="${{ github.event.inputs.deployment_environment }}"
+
+          echo "Polling Amplify for deployment status..."
+          for i in {1..30}; do
+            status=$(aws amplify list-jobs \
+              --app-id "$APP_ID" \
+              --branch-name "$BRANCH_NAME" \
+              --query "jobSummaries[0].status" \
+              --output text \
+              --region "$AWS_REGION")
+
+            echo "Deployment status: $status"
+
+            if [[ "$status" == "SUCCEED" ]]; then
+              echo "✅ Amplify deployment succeeded."
+              exit 0
+            elif [[ "$status" == "FAILED" || "$status" == "CANCELLED" ]]; then
+              echo "::error::❌ Amplify deployment failed with status: $status"
+              exit 1
+            fi
+
+            sleep 10
+          done
+
+          echo "::error::Deployment timed out waiting for success."
+          exit 1
