@@ -37,7 +37,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          RELEASE_OUTPUT=$(npx semantic-release || true)
+          RELEASE_OUTPUT=$(npx semantic-release)
 
           echo "$RELEASE_OUTPUT"
 
@@ -47,8 +47,8 @@ jobs:
             echo "released=true" >> "$GITHUB_OUTPUT"
             echo "version=$version" >> "$GITHUB_OUTPUT"
           else
-            echo "No new version published."
-            echo "released=false" >> "$GITHUB_OUTPUT"
+            echo "No new version published. Failing the workflow."
+            exit 1
           fi
 
   deploy-staging:
