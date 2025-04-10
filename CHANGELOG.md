@@ -1,3 +1,10 @@
+## [1.2.28](https://github.com/kranthisai-1/next-deploy/compare/v1.2.27...v1.2.28) (2025-04-10)
+
+
+### Bug Fixes
+
+* fuixe ([1bd08ea](https://github.com/kranthisai-1/next-deploy/commit/1bd08eae685a104d37cfebb7b353ad359a3f23e5))
+
 ## [1.2.27](https://github.com/kranthisai-1/next-deploy/compare/v1.2.26...v1.2.27) (2025-04-10)
 
 
