@@ -1,3 +1,10 @@
+## [1.2.19](https://github.com/kranthisai-1/next-deploy/compare/v1.2.18...v1.2.19) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixes ([29d600e](https://github.com/kranthisai-1/next-deploy/commit/29d600e08f4a33a3fa06f76b9f7d8fb5ab4b696f))
+
 ## [1.2.18](https://github.com/kranthisai-1/next-deploy/compare/v1.2.17...v1.2.18) (2025-04-10)
 
 
