@@ -126,7 +126,7 @@ jobs:
 
               curl -X POST -H 'Content-type: application/json' \
                 --data "{
-                  \"text\": \":white_check_mark: *Deployment succeeded*\n*Tag:* \`${{ steps.validate.outputs.version_tag }}\`\n*Env:* \`${{ github.event.inputs.deployment_environment }}\`
+                  \"text\": \":white_check_mark: *Deployment succeeded*\n*Tag:* \`${{ steps.validate.outputs.version_tag }}\`\n*Env:* \`${{ github.event.inputs.deployment_environment }}\`\"
                 }" \
               ${{ secrets.SLACK_WEBHOOK_URL }}
 
@@ -145,7 +145,7 @@ jobs:
 
               curl -X POST -H 'Content-type: application/json' \
                 --data "{
-                  \"text\": \":x: *Deployment failed*\n*Tag:* \`${{ steps.validate.outputs.version_tag }}\`\n*Env:* \`${{ github.event.inputs.deployment_environment }}\`
+                  \"text\": \":x: *Deployment failed*\n*Tag:* \`${{ steps.validate.outputs.version_tag }}\`\n*Env:* \`${{ github.event.inputs.deployment_environment }}\`\"
                 }" \
               ${{ secrets.SLACK_WEBHOOK_URL }}
 
