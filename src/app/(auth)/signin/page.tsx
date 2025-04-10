@@ -52,6 +52,10 @@ export default function Signin() {
           <div>dvfjjnj</div>
           <div>dvfjjnj</div>
           <div>dvfjjnj</div>
+          <div>dvfjjnj</div>
+          <div>dvfjjnj</div>
+          <div>dvfjjnj</div>
+          <div>dvfjjnj</div>
           <div className="logo mt-3 ml-[30%]"></div>
           <div className="flex justify-center mt-[140px] pl-2">
             <GoogleLogin
