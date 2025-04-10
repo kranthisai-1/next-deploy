@@ -1,3 +1,205 @@
+## [1.3.6](https://github.com/kranthisai-1/next-deploy/compare/v1.3.5...v1.3.6) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixes ([1b0376f](https://github.com/kranthisai-1/next-deploy/commit/1b0376f9087dc824b1c4bdd2af39dab3357331d9))
+* jvdfbnj ([8ff20cf](https://github.com/kranthisai-1/next-deploy/commit/8ff20cf01305682ad52cfd09f468409d5e2773a4))
+
+## [1.3.5](https://github.com/kranthisai-1/next-deploy/compare/v1.3.4...v1.3.5) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixes ([ecc51b3](https://github.com/kranthisai-1/next-deploy/commit/ecc51b39976c9a5fd75215077a42b05c8c387d9b))
+
+## [1.3.4](https://github.com/kranthisai-1/next-deploy/compare/v1.3.3...v1.3.4) (2025-04-10)
+
+
+### Bug Fixes
+
+* fices ([21e7935](https://github.com/kranthisai-1/next-deploy/commit/21e79355906d667d8f1aa74e2e5ee00017ff7bb7))
+
+## [1.3.3](https://github.com/kranthisai-1/next-deploy/compare/v1.3.2...v1.3.3) (2025-04-10)
+
+
+### Bug Fixes
+
+* fices ([d1bb31f](https://github.com/kranthisai-1/next-deploy/commit/d1bb31f53f6ffabf27988175863bdcaa0886c30a))
+
+## [1.3.2](https://github.com/kranthisai-1/next-deploy/compare/v1.3.1...v1.3.2) (2025-04-10)
+
+
+### Bug Fixes
+
+* fcsed ([68c2e3c](https://github.com/kranthisai-1/next-deploy/commit/68c2e3cebc56cf3d93065a27ff595a12d8af84bf))
+
+## [1.3.1](https://github.com/kranthisai-1/next-deploy/compare/v1.3.0...v1.3.1) (2025-04-10)
+
+
+### Bug Fixes
+
+* chnages ([1ba8e94](https://github.com/kranthisai-1/next-deploy/commit/1ba8e94f215c878fa0825d68fe2eea8cc85d5715))
+
+# [1.3.0](https://github.com/kranthisai-1/next-deploy/compare/v1.2.30...v1.3.0) (2025-04-10)
+
+
+### Features
+
+* chnages ([5b52101](https://github.com/kranthisai-1/next-deploy/commit/5b521010e549ae306b2c9e0c21aef7bded3713a0))
+
+## [1.2.30](https://github.com/kranthisai-1/next-deploy/compare/v1.2.29...v1.2.30) (2025-04-10)
+
+
+### Bug Fixes
+
+* fuixe ([782056c](https://github.com/kranthisai-1/next-deploy/commit/782056cdf3344279145ac7440a01d0f242d35dd1))
+
+## [1.2.29](https://github.com/kranthisai-1/next-deploy/compare/v1.2.28...v1.2.29) (2025-04-10)
+
+
+### Bug Fixes
+
+* fuixe ([331b0dc](https://github.com/kranthisai-1/next-deploy/commit/331b0dc7063994ef0240df40311452b5f33fb002))
+
+## [1.2.28](https://github.com/kranthisai-1/next-deploy/compare/v1.2.27...v1.2.28) (2025-04-10)
+
+
+### Bug Fixes
+
+* fuixe ([1bd08ea](https://github.com/kranthisai-1/next-deploy/commit/1bd08eae685a104d37cfebb7b353ad359a3f23e5))
+
+## [1.2.27](https://github.com/kranthisai-1/next-deploy/compare/v1.2.26...v1.2.27) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixes ([322a500](https://github.com/kranthisai-1/next-deploy/commit/322a5003b867683276c92535d8684bfbbccad129))
+
+## [1.2.26](https://github.com/kranthisai-1/next-deploy/compare/v1.2.25...v1.2.26) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixes ([d9c4479](https://github.com/kranthisai-1/next-deploy/commit/d9c4479e7b677a8dc19ec4f7b10ce4677d3a86a7))
+
+## [1.2.25](https://github.com/kranthisai-1/next-deploy/compare/v1.2.24...v1.2.25) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixes ([78cc230](https://github.com/kranthisai-1/next-deploy/commit/78cc230b8b2429c9c25aaeb330448b28e0ac3be5))
+
+## [1.2.24](https://github.com/kranthisai-1/next-deploy/compare/v1.2.23...v1.2.24) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixes ([f24c424](https://github.com/kranthisai-1/next-deploy/commit/f24c424e7fe45db02b8793bae220d356cf1b830b))
+
+## [1.2.23](https://github.com/kranthisai-1/next-deploy/compare/v1.2.22...v1.2.23) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixes ([31ddaa7](https://github.com/kranthisai-1/next-deploy/commit/31ddaa707cd22975bd6b17335f32ffeea5e5750e))
+
+## [1.2.22](https://github.com/kranthisai-1/next-deploy/compare/v1.2.21...v1.2.22) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixesf ([32e3a0a](https://github.com/kranthisai-1/next-deploy/commit/32e3a0adc111dd17fcdd49c0f27eb17929ffb1f6))
+
+## [1.2.21](https://github.com/kranthisai-1/next-deploy/compare/v1.2.20...v1.2.21) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixesf ([1e78353](https://github.com/kranthisai-1/next-deploy/commit/1e78353b1acd6538121477c23a1eca5bd10b65b1))
+
+## [1.2.20](https://github.com/kranthisai-1/next-deploy/compare/v1.2.19...v1.2.20) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixes ([8b2ed8d](https://github.com/kranthisai-1/next-deploy/commit/8b2ed8d6d7c2e95289dea7e60a56635460957a74))
+
+## [1.2.19](https://github.com/kranthisai-1/next-deploy/compare/v1.2.18...v1.2.19) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixes ([29d600e](https://github.com/kranthisai-1/next-deploy/commit/29d600e08f4a33a3fa06f76b9f7d8fb5ab4b696f))
+
+## [1.2.18](https://github.com/kranthisai-1/next-deploy/compare/v1.2.17...v1.2.18) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixes ([6acf7ec](https://github.com/kranthisai-1/next-deploy/commit/6acf7ece81d7c2f8b70399d962e98b26d56c6312))
+
+## [1.2.17](https://github.com/kranthisai-1/next-deploy/compare/v1.2.16...v1.2.17) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixedfs ([30d725d](https://github.com/kranthisai-1/next-deploy/commit/30d725d9885159640153b46a77c52bb213aadbd1))
+
+## [1.2.16](https://github.com/kranthisai-1/next-deploy/compare/v1.2.15...v1.2.16) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixes ([1e21a86](https://github.com/kranthisai-1/next-deploy/commit/1e21a861c059b052f2c69e91e0b14270b4f4933c))
+
+## [1.2.15](https://github.com/kranthisai-1/next-deploy/compare/v1.2.14...v1.2.15) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixes ([6b2a6fb](https://github.com/kranthisai-1/next-deploy/commit/6b2a6fbad97b6561c1cc60c15c2d2b921bcdc1c9))
+
+## [1.2.14](https://github.com/kranthisai-1/next-deploy/compare/v1.2.13...v1.2.14) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixes ([2f09884](https://github.com/kranthisai-1/next-deploy/commit/2f09884047e6a6a5b358946d1ba66e98550f1ef8))
+* fixes ([40d4c7e](https://github.com/kranthisai-1/next-deploy/commit/40d4c7e6e417a6735057294eed1af33c5ef26d98))
+
+## [1.2.13](https://github.com/kranthisai-1/next-deploy/compare/v1.2.12...v1.2.13) (2025-04-09)
+
+
+### Bug Fixes
+
+* fixes ([8285c47](https://github.com/kranthisai-1/next-deploy/commit/8285c47cce8b9ff8c3d0fbcdedee857fc2afde34))
+
+## [1.2.12](https://github.com/kranthisai-1/next-deploy/compare/v1.2.11...v1.2.12) (2025-04-09)
+
+
+### Bug Fixes
+
+* mycommit ([9a00d55](https://github.com/kranthisai-1/next-deploy/commit/9a00d55958e2404859c9179b1a6a9ecc5c447e84))
+
+## [1.2.11](https://github.com/kranthisai-1/next-deploy/compare/v1.2.10...v1.2.11) (2025-04-09)
+
+
+### Bug Fixes
+
+* nnjkvfdw ([01f8b51](https://github.com/kranthisai-1/next-deploy/commit/01f8b5184cb3ddaea61baafc0677307b8f97bbd7))
+* nnjkvfdwe ([83b045a](https://github.com/kranthisai-1/next-deploy/commit/83b045a4422027bec98edf5e8c4d77aa120326a7))
+
+## [1.2.10](https://github.com/kranthisai-1/next-deploy/compare/v1.2.9...v1.2.10) (2025-04-09)
+
+
+### Bug Fixes
+
+* delted ([592612b](https://github.com/kranthisai-1/next-deploy/commit/592612b9c27539eedfb6f9f86adcdba0893e91ce))
+* delted ([36887c3](https://github.com/kranthisai-1/next-deploy/commit/36887c31403ae88b99dbc4a56ab5b2edd0038478))
+* fixes ([25dc7a6](https://github.com/kranthisai-1/next-deploy/commit/25dc7a60632544b100ec6d3ec33fbfd34a16c69c))
+* fixes ([f0455b7](https://github.com/kranthisai-1/next-deploy/commit/f0455b71702f69fb9c0091d8f43d73eb82733b43))
+
 ## [1.2.9](https://github.com/kranthisai-1/next-deploy/compare/v1.2.8...v1.2.9) (2025-04-09)
 
 
