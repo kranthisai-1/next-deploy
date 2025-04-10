@@ -1,3 +1,10 @@
+## [1.3.2](https://github.com/kranthisai-1/next-deploy/compare/v1.3.1...v1.3.2) (2025-04-10)
+
+
+### Bug Fixes
+
+* fcsed ([68c2e3c](https://github.com/kranthisai-1/next-deploy/commit/68c2e3cebc56cf3d93065a27ff595a12d8af84bf))
+
 ## [1.3.1](https://github.com/kranthisai-1/next-deploy/compare/v1.3.0...v1.3.1) (2025-04-10)
 
 
