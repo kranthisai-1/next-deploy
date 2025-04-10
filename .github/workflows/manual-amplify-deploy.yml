@@ -16,8 +16,8 @@ on:
         default: "Manual deployment triggered"
 
 permissions:
-  id-token: write 
   contents: write
+  id-token: write  # Required for OIDC
 
 jobs:
   deploy:
@@ -40,6 +40,7 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::270290807521:role/GitHubActionsAmplifyDeployRole
           aws-region: us-east-1
+          audience: sts.amazonaws.com
 
       - name: Checkout target branch
         uses: actions/checkout@v4
@@ -65,10 +66,8 @@ jobs:
         run: |
           if [ "${{ github.event.inputs.deployment_environment }}" = "staging" ]; then
             echo "url=https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=491b16b6-4c4b-4690-ba80-3e4dcf40a4d4&token=HoP06RMo7z7VPwCznlDYrfSHdqBcPTCnMWgEybr9A" >> $GITHUB_OUTPUT
-            echo "branch=staging" >> $GITHUB_OUTPUT
           elif [ "${{ github.event.inputs.deployment_environment }}" = "production" ]; then
             echo "url=https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=da0ac255-2976-48ec-a99b-be6397caf298&token=GD0zBA1bAAFOlD87jT3KMJik8ylM0J5Nsex3OUNIOg" >> $GITHUB_OUTPUT
-            echo "branch=main" >> $GITHUB_OUTPUT
           else
             echo "::error::Invalid environment"
             exit 1
@@ -78,11 +77,11 @@ jobs:
         run: |
           curl -X POST "${{ steps.webhook.outputs.url }}"
 
-      - name: Poll Amplify for deployment status
+      - name: Poll Amplify deployment status
         env:
-          APP_ID: d1uwoew2a9382l
-          BRANCH_NAME: ${{ steps.webhook.outputs.branch }}
           AWS_REGION: us-east-1
+          APP_ID: d1uwoew2a9382l
+          BRANCH_NAME: ${{ github.event.inputs.deployment_environment }}
         run: |
           echo "Polling Amplify for deployment status..."
           for i in {1..30}; do
