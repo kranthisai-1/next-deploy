@@ -1,3 +1,11 @@
+## [1.3.18](https://github.com/kranthisai-1/next-deploy/compare/v1.3.17...v1.3.18) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixes ([66f416e](https://github.com/kranthisai-1/next-deploy/commit/66f416e03c8f3c65f07822d4ad37f791e9d03838))
+* Staging ([d36220c](https://github.com/kranthisai-1/next-deploy/commit/d36220c031349fbfa57b0b1fbae53f738a02898f))
+
 ## [1.3.17](https://github.com/kranthisai-1/next-deploy/compare/v1.3.16...v1.3.17) (2025-04-10)
 
 
