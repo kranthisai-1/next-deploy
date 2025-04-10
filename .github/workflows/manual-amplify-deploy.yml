@@ -135,3 +135,14 @@ jobs:
 
           echo "::error::Deployment timed out waiting for success."
           exit 1
+          
+      - name: Cleanup .env.deploy
+        if: always()
+        run: |
+          echo "Cleaning up .env.deploy file..."
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git rm -f .env.deploy || true
+          git commit --allow-empty -m "chore: cleanup .env.deploy after deployment"
+          git push origin ${{ github.event.inputs.deployment_environment }}
+
