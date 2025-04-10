@@ -85,10 +85,11 @@ jobs:
         run: |
           echo "Polling Amplify for deployment status..."
           sleep 10
+
           job_id=$(aws amplify list-jobs \
             --app-id "$APP_ID" \
             --branch-name "$BRANCH_NAME" \
-            --region "$AWS_REGION"
+            --region "$AWS_REGION" \
             --output json | jq -r '.jobSummaries[0].jobId')
 
           echo "Latest job ID: $job_id"
@@ -98,19 +99,35 @@ jobs:
               --app-id "$APP_ID" \
               --branch-name "$BRANCH_NAME" \
               --job-id "$job_id" \
-              --region "$AWS_REGION")
+              --region "$AWS_REGION" \
+              --output json)
 
             status=$(echo "$job_data" | jq -r '.job.summary.status')
             echo "Deployment status: $status"
 
             if [[ "$status" == "SUCCEED" ]]; then
-              echo "✅ Amplify deployment succeeded. Logs:"
-              echo "$job_data" | jq -r '.job.steps[] | "\(.stepName): \(.status)"'
+              echo "✅ Amplify deployment succeeded. Step logs:"
+              steps=$(echo "$job_data" | jq -c '.job.steps[]')
+              while IFS= read -r step; do
+                name=$(echo "$step" | jq -r '.stepName')
+                log_url=$(echo "$step" | jq -r '.logUrl')
+                echo "--- $name ---"
+                curl -s "$log_url"
+                echo ""
+              done <<< "$steps"
               exit 0
+
             elif [[ "$status" == "FAILED" || "$status" == "CANCELLED" ]]; then
-               echo "::error::❌ Amplify deployment failed with status: $status. Logs:"
-               echo "$job_data" | jq -r '.job.steps[] | "\(.stepName): \(.status) - \(.logUrl)"'
-               exit 1
+              echo "::error::❌ Amplify deployment failed with status: $status. Step logs:"
+              steps=$(echo "$job_data" | jq -c '.job.steps[]')
+              while IFS= read -r step; do
+                name=$(echo "$step" | jq -r '.stepName')
+                log_url=$(echo "$step" | jq -r '.logUrl')
+                echo "--- $name ---"
+                curl -s "$log_url"
+                echo ""
+              done <<< "$steps"
+              exit 1
             fi
 
             sleep 10
