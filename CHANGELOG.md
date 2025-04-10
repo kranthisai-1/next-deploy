@@ -1,3 +1,10 @@
+## [1.3.24](https://github.com/kranthisai-1/next-deploy/compare/v1.3.23...v1.3.24) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixes ([f533856](https://github.com/kranthisai-1/next-deploy/commit/f5338566a96adfeb08e1c9d57653f07efcf54fbd))
+
 ## [1.3.23](https://github.com/kranthisai-1/next-deploy/compare/v1.3.22...v1.3.23) (2025-04-10)
 
 
