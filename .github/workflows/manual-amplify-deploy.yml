@@ -85,22 +85,33 @@ jobs:
         run: |
           echo "Polling Amplify for deployment status..."
           sleep 10
+          job_id=$(aws amplify list-jobs \
+           --app-id "$APP_ID" \
+           --branch-name "$BRANCH_NAME" \
+           --query "jobSummaries[0].jobId" \
+           --output text \
+           --region "$AWS_REGION")
+
+          echo "Latest job ID: $job_id"
+
           for i in {1..30}; do
-            status=$(aws amplify list-jobs \
+            job_data=$(aws amplify get-job \
               --app-id "$APP_ID" \
               --branch-name "$BRANCH_NAME" \
-              --query "jobSummaries[0].status" \
-              --output text \
+              --job-id "$job_id" \
               --region "$AWS_REGION")
 
-            status=$(echo "$status" | tr -d '\r' | head -n 1)
+            status=$(echo "$job_data" | jq -r '.job.summary.status')
+            echo "Deployment status: $status"
 
             if [[ "$status" == "SUCCEED" ]]; then
-              echo "✅ Amplify deployment succeeded."
+              echo "✅ Amplify deployment succeeded. Logs:"
+              echo "$job_data" | jq -r '.job.steps[] | "\(.stepName): \(.status)"'
               exit 0
             elif [[ "$status" == "FAILED" || "$status" == "CANCELLED" ]]; then
-              echo "::error::❌ Amplify deployment failed with status: $status"
-              exit 1
+               echo "::error::❌ Amplify deployment failed with status: $status. Logs:"
+               echo "$job_data" | jq -r '.job.steps[] | "\(.stepName): \(.status) - \(.logUrl)"'
+               exit 1
             fi
 
             sleep 10
