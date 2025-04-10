@@ -1,3 +1,10 @@
+## [1.2.17](https://github.com/kranthisai-1/next-deploy/compare/v1.2.16...v1.2.17) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixedfs ([30d725d](https://github.com/kranthisai-1/next-deploy/commit/30d725d9885159640153b46a77c52bb213aadbd1))
+
 ## [1.2.16](https://github.com/kranthisai-1/next-deploy/compare/v1.2.15...v1.2.16) (2025-04-10)
 
 
