@@ -86,10 +86,10 @@ jobs:
           echo "Polling Amplify for deployment status..."
           sleep 10
           job_id=$(aws amplify list-jobs \
-           --app-id "$APP_ID" \
-           --branch-name "$BRANCH_NAME" \
-           --region "$AWS_REGION")
-           --output json | jq -r '.jobSummaries[0].jobId')
+            --app-id "$APP_ID" \
+            --branch-name "$BRANCH_NAME" \
+            --region "$AWS_REGION"
+            --output json | jq -r '.jobSummaries[0].jobId')
 
           echo "Latest job ID: $job_id"
 
