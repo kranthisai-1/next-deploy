@@ -107,7 +107,7 @@ jobs:
 
             if [[ "$status" == "SUCCEED" ]]; then
               echo "✅ Amplify deployment succeeded. Step logs:"
-              steps=$(echo "$job_data" | jq -c '.job.steps[]')
+              steps=$(echo "$job_data" | jq -c '.job.steps[] | select(.logUrl != null)')
               while IFS= read -r step; do
                 name=$(echo "$step" | jq -r '.stepName')
                 log_url=$(echo "$step" | jq -r '.logUrl')
@@ -119,7 +119,7 @@ jobs:
 
             elif [[ "$status" == "FAILED" || "$status" == "CANCELLED" ]]; then
               echo "::error::❌ Amplify deployment failed with status: $status. Step logs:"
-              steps=$(echo "$job_data" | jq -c '.job.steps[]')
+              steps=$(echo "$job_data" | jq -c '.job.steps[] | select(.logUrl != null)')
               while IFS= read -r step; do
                 name=$(echo "$step" | jq -r '.stepName')
                 log_url=$(echo "$step" | jq -r '.logUrl')
