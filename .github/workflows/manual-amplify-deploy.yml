@@ -41,7 +41,7 @@ jobs:
             --data "{
               \"text\": \":rocket: *Manual deployment started*\n*Tag:* \`${GITHUB_REF#refs/tags/}\`\n*Env:* \`${{ github.event.inputs.deployment_environment }}\`\n*Reason:* ${{ github.event.inputs.deployment_message }}\"
             }" \
-            https://hooks.slack.com/services/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
+           https://hooks.slack.com/services/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
 
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v2
@@ -128,7 +128,7 @@ jobs:
                 --data "{
                   \"text\": \":white_check_mark: *Deployment succeeded*\n*Tag:* \`${{ steps.validate.outputs.version_tag }}\`\n*Env:* \`${{ github.event.inputs.deployment_environment }}\`
                 }" \
-               https://hooks.slack.com/services/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
+              https://hooks.slack.com/services/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
 
               exit 0
 
@@ -147,7 +147,7 @@ jobs:
                 --data "{
                   \"text\": \":x: *Deployment failed*\n*Tag:* \`${{ steps.validate.outputs.version_tag }}\`\n*Env:* \`${{ github.event.inputs.deployment_environment }}\`
                 }" \
-               https://hooks.slack.com/services/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
+              https://hooks.slack.com/services/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
 
               exit 1
             fi
@@ -160,7 +160,7 @@ jobs:
             --data "{
               \"text\": \":alarm_clock: *Deployment timed out*\n*Tag:* \`${{ steps.validate.outputs.version_tag }}\`\n*Env:* \`${{ github.event.inputs.deployment_environment }}\`
             }" \
-            https://hooks.slack.com/services/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
+           https://hooks.slack.com/services/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
 
           exit 1
           
