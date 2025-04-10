@@ -1,79 +1,99 @@
-name: Manual Amplify Deploy
+name: Manual Tag Deployment
 
 on:
   workflow_dispatch:
     inputs:
       deployment_environment:
-        description: 'Deployment environment (e.g., staging or production)'
+        description: "Target environment"
         required: true
-        default: staging
+        type: choice
+        options:
+          - staging
+          - production
+      deployment_message:
+        description: "Deployment reason"
+        required: false
+        default: "Manual deployment triggered"
+
+permissions:
+  contents: write
+  id-token: write  # Required for OIDC
 
 jobs:
   deploy:
-    name: Deploy to Amplify
     runs-on: ubuntu-latest
-
-    permissions:
-      id-token: write
-      contents: read
-
-    env:
-      AWS_REGION: us-east-1
-      APP_ID: d1uwoew2a9382l
+    environment: ${{ github.event.inputs.deployment_environment }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Validate that a tag was selected
+        id: validate
+        run: |
+          echo "GITHUB_REF=${GITHUB_REF}"
+          if [[ "${GITHUB_REF}" != refs/tags/* ]]; then
+            echo "::error::You must run this workflow from a tag."
+            exit 1
+          fi
+          echo "version_tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: arn:aws:iam::270290807521:role/GitHubActionsAmplifyDeployRole
-          role-session-name: GitHubActionsSession
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: us-east-1
+          audience: sts.amazonaws.com
 
-      - name: Trigger Amplify Deployment via Webhook
+      - name: Checkout target branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.deployment_environment }}
+
+      - name: Create .env.deploy
         run: |
-          if [ "${{ github.event.inputs.deployment_environment }}" == "staging" ]; then
-            curl -X POST https://webhook-url-for-staging
-          elif [ "${{ github.event.inputs.deployment_environment }}" == "production" ]; then
-            curl -X POST https://webhook-url-for-production
+          echo "VERSION_TAG=${{ steps.validate.outputs.version_tag }}" > .env.deploy
+          echo "DEPLOYMENT_MESSAGE=${{ github.event.inputs.deployment_message }}" >> .env.deploy
+
+      - name: Commit and push .env.deploy 
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git add .env.deploy
+          git commit --allow-empty -m "chore: update .env.deploy for ${{ steps.validate.outputs.version_tag }}"
+          git push origin ${{ github.event.inputs.deployment_environment }}
+
+      - name: Set webhook URL
+        id: webhook
+        run: |
+          if [ "${{ github.event.inputs.deployment_environment }}" = "staging" ]; then
+            echo "url=https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=491b16b6-4c4b-4690-ba80-3e4dcf40a4d4&token=HoP06RMo7z7VPwCznlDYrfSHdqBcPTCnMWgEybr9A" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event.inputs.deployment_environment }}" = "production" ]; then
+            echo "url=https://webhooks.amplify.us-east-1.amazonaws.com/prod/webhooks?id=da0ac255-2976-48ec-a99b-be6397caf298&token=GD0zBA1bAAFOlD87jT3KMJik8ylM0J5Nsex3OUNIOg" >> $GITHUB_OUTPUT
           else
-            echo "::error::Invalid deployment environment"
+            echo "::error::Invalid environment"
             exit 1
           fi
 
+      - name: Trigger Amplify deployment
+        run: |
+          curl -X POST "${{ steps.webhook.outputs.url }}"
+
       - name: Poll Amplify deployment status
         env:
+          AWS_REGION: us-east-1
+          APP_ID: d1uwoew2a9382l
           BRANCH_NAME: ${{ github.event.inputs.deployment_environment }}
         run: |
-          echo "📡 Polling Amplify for latest deployment job status..."
-
-          # Wait a few seconds for the deployment job to register
+          echo "Polling Amplify for deployment status..."
           sleep 10
-
-          # Get the most recent job ID
-          job_id=$(aws amplify list-jobs \
-            --app-id "$APP_ID" \
-            --branch-name "$BRANCH_NAME" \
-            --query "jobSummaries[0].jobId" \
-            --output text \
-            --region "$AWS_REGION")
-
-          echo "🆔 Latest job ID: $job_id"
-
           for i in {1..30}; do
-            status=$(aws amplify get-job \
+            status=$(aws amplify list-jobs \
               --app-id "$APP_ID" \
               --branch-name "$BRANCH_NAME" \
-              --job-id "$job_id" \
-              --query "job.summary.status" \
+              --query "jobSummaries[0].status" \
               --output text \
               --region "$AWS_REGION")
 
             status=$(echo "$status" | tr -d '\r' | head -n 1)
-
-            echo "🔁 Deployment status: [$status]"
 
             if [[ "$status" == "SUCCEED" ]]; then
               echo "✅ Amplify deployment succeeded."
@@ -86,5 +106,5 @@ jobs:
             sleep 10
           done
 
-          echo "::error::⏰ Deployment timed out waiting for success."
+          echo "::error::Deployment timed out waiting for success."
           exit 1
