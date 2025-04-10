@@ -17,7 +17,7 @@ on:
 
 permissions:
   contents: write
-  id-token: write  # Required for OIDC
+  id-token: write
 
 jobs:
   deploy:
@@ -34,6 +34,14 @@ jobs:
             exit 1
           fi
           echo "version_tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Notify Slack - Deployment Started
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+            --data "{
+              \"text\": \":rocket: *Manual deployment started*\n*Tag:* \`${GITHUB_REF#refs/tags/}\`\n*Env:* \`${{ github.event.inputs.deployment_environment }}\`\n*Reason:* ${{ github.event.inputs.deployment_message }}\"
+            }" \
+            https://hooks.slack.com/services/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
 
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v2
@@ -106,7 +114,7 @@ jobs:
             echo "Deployment status: $status"
 
             if [[ "$status" == "SUCCEED" ]]; then
-              echo "✅ Amplify deployment succeeded. Step logs:"
+              echo "Amplify deployment succeeded. Step logs:"
               steps=$(echo "$job_data" | jq -c '.job.steps[] | select(.logUrl != null)')
               while IFS= read -r step; do
                 name=$(echo "$step" | jq -r '.stepName')
@@ -115,10 +123,17 @@ jobs:
                 curl -s "$log_url"
                 echo ""
               done <<< "$steps"
+
+              curl -X POST -H 'Content-type: application/json' \
+                --data "{
+                  \"text\": \":white_check_mark: *Deployment succeeded*\n*Tag:* \`${{ steps.validate.outputs.version_tag }}\`\n*Env:* \`${{ github.event.inputs.deployment_environment }}\`
+                }" \
+               https://hooks.slack.com/services/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
+
               exit 0
 
             elif [[ "$status" == "FAILED" || "$status" == "CANCELLED" ]]; then
-              echo "::error::❌ Amplify deployment failed with status: $status. Step logs:"
+              echo "::error::Amplify deployment failed with status: $status. Step logs:"
               steps=$(echo "$job_data" | jq -c '.job.steps[] | select(.logUrl != null)')
               while IFS= read -r step; do
                 name=$(echo "$step" | jq -r '.stepName')
@@ -127,6 +142,13 @@ jobs:
                 curl -s "$log_url"
                 echo ""
               done <<< "$steps"
+
+              curl -X POST -H 'Content-type: application/json' \
+                --data "{
+                  \"text\": \":x: *Deployment failed*\n*Tag:* \`${{ steps.validate.outputs.version_tag }}\`\n*Env:* \`${{ github.event.inputs.deployment_environment }}\`
+                }" \
+               https://hooks.slack.com/services/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
+
               exit 1
             fi
 
@@ -134,6 +156,12 @@ jobs:
           done
 
           echo "::error::Deployment timed out waiting for success."
+          curl -X POST -H 'Content-type: application/json' \
+            --data "{
+              \"text\": \":alarm_clock: *Deployment timed out*\n*Tag:* \`${{ steps.validate.outputs.version_tag }}\`\n*Env:* \`${{ github.event.inputs.deployment_environment }}\`
+            }" \
+            https://hooks.slack.com/services/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
+
           exit 1
           
       - name: Cleanup .env.deploy
