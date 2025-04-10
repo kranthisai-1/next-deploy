@@ -88,9 +88,8 @@ jobs:
           job_id=$(aws amplify list-jobs \
            --app-id "$APP_ID" \
            --branch-name "$BRANCH_NAME" \
-           --query "jobSummaries[0].jobId" \
-           --output text \
            --region "$AWS_REGION")
+           --output json | jq -r '.jobSummaries[0].jobId')
 
           echo "Latest job ID: $job_id"
 
