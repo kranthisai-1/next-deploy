@@ -16,7 +16,7 @@ on:
         default: "Manual deployment triggered"
 
 permissions:
-  id-token: write       # 👈 Required for OIDC
+  id-token: write 
   contents: write
 
 jobs:
