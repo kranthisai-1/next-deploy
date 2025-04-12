@@ -36,12 +36,13 @@ jobs:
           echo "version_tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
       - name: Notify Slack - Deployment Started
-        run: |
-          curl -X POST -H 'Content-type: application/json' \
-            --data "{
-              \"text\": \":rocket: *Manual deployment started*\n*Tag:* \`${GITHUB_REF#refs/tags/}\`\n*Env:* \`${{ github.event.inputs.deployment_environment }}\`\n*Reason:* ${{ github.event.inputs.deployment_message }}\"
-            }" \
-           ${{ secrets.SLACK_WEBHOOK_URL }}
+        uses: todaypay/workflows/slack-alert@main
+        with:
+          channel_id: ${{ secrets.SLACK_CHANNEL_ID }}
+          slack_token: ${{ secrets.SLACK_TOKEN }}
+          title: "Deployment initiated"
+          message: "Deploying \`v${{ steps.validate.outputs.version_tag }}\` to \`${{ github.event.inputs.deployment_environment }}\` now! \`\`\`${{ github.event.inputs.deployment_message }}\`\`\`"
+          message_type: "info"
 
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v2
@@ -123,13 +124,7 @@ jobs:
                 curl -s "$log_url"
                 echo ""
               done <<< "$steps"
-
-              curl -X POST -H 'Content-type: application/json' \
-                --data "{
-                  \"text\": \":white_check_mark: *Deployment succeeded*\n*Tag:* \`${{ steps.validate.outputs.version_tag }}\`\n*Env:* \`${{ github.event.inputs.deployment_environment }}\`\"
-                }" \
-              ${{ secrets.SLACK_WEBHOOK_URL }}
-
+              echo "status=success" >> $GITHUB_OUTPUT
               exit 0
 
             elif [[ "$status" == "FAILED" || "$status" == "CANCELLED" ]]; then
@@ -142,28 +137,26 @@ jobs:
                 curl -s "$log_url"
                 echo ""
               done <<< "$steps"
-
-              curl -X POST -H 'Content-type: application/json' \
-                --data "{
-                  \"text\": \":x: *Deployment failed*\n*Tag:* \`${{ steps.validate.outputs.version_tag }}\`\n*Env:* \`${{ github.event.inputs.deployment_environment }}\`\"
-                }" \
-              ${{ secrets.SLACK_WEBHOOK_URL }}
-
+              echo "status=failure" >> $GITHUB_OUTPUT
               exit 1
             fi
 
-            sleep 10
+            sleep 2
           done
 
           echo "::error::Deployment timed out waiting for success."
-          curl -X POST -H 'Content-type: application/json' \
-            --data "{
-              \"text\": \":alarm_clock: *Deployment timed out*\n*Tag:* \`${{ steps.validate.outputs.version_tag }}\`\n*Env:* \`${{ github.event.inputs.deployment_environment }}\`
-            }" \
-           ${{ secrets.SLACK_WEBHOOK_URL }}
-
+          echo "status=timeout" >> $GITHUB_OUTPUT
           exit 1
-          
+      - name: Notify Slack - Deployment Result
+        if: always()
+        uses: todaypay/workflows/slack-alert@main
+        with:
+          channel_id: ${{ secrets.SLACK_CHANNEL_ID }}
+          slack_token: ${{ secrets.SLACK_TOKEN }}
+          title: ${{ steps.amplify_poll.outputs.status == 'success' && 'Deployment successful' || (steps.amplify_poll.outputs.status == 'failure' && 'Deployment failed' || 'Deployment timed out') }}
+          message: "${{ steps.amplify_poll.outputs.status == 'success' && format('Successfully deployed `v{0}` to `{1}` and is ready to use!', steps.validate.outputs.version_tag, github.event.inputs.deployment_environment) || (steps.amplify_poll.outputs.status == 'failure' && format('Failed to deploy `v{0}` to `{1}`!', steps.validate.outputs.version_tag, github.event.inputs.deployment_environment) || format('Deployment timed out for `v{0}` to `{1}`.', steps.validate.outputs.version_tag, github.event.inputs.deployment_environment)) }}"
+          message_type: "${{ steps.amplify_poll.outputs.status == 'success' && 'success' || 'error' }}"
+
       - name: Cleanup .env.deploy
         if: always()
         run: |
