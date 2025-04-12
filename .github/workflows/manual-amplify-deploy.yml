@@ -144,10 +144,6 @@ jobs:
             sleep 10
           done
 
-          echo "::error::Deployment timed out waiting for success."
-          echo "status=timeout" >> $GITHUB_OUTPUT
-          exit 1
-
       - name: Notify Slack - Deployment Result
         if: always()
         uses: kranthisai-1/workflows/slack-alert@main
@@ -155,7 +151,7 @@ jobs:
           channel_id: ${{ secrets.SLACK_CHANNEL_ID }}
           slack_token: ${{ secrets.SLACK_TOKEN }}
           title: ${{ steps.amplify_poll.outputs.status == 'success' && 'Deployment successful' || (steps.amplify_poll.outputs.status == 'failure' && 'Deployment failed' || 'Deployment timed out') }}
-          message: "${{ steps.amplify_poll.outputs.status == 'success' && format('Successfully deployed `v{0}` to `{1}` and is ready to use!', steps.validate.outputs.version_tag, github.event.inputs.deployment_environment) || (steps.amplify_poll.outputs.status == 'failure' && format('Failed to deploy `v{0}` to `{1}`!', steps.validate.outputs.version_tag, github.event.inputs.deployment_environment) || format('Deployment timed out for `v{0}` to `{1}`.', steps.validate.outputs.version_tag, github.event.inputs.deployment_environment)) }}"
+          message: "${{ steps.amplify_poll.outputs.status == 'success' && format('Successfully deployed `{0}` to `{1}` and is ready to use!', steps.validate.outputs.version_tag, github.event.inputs.deployment_environment) || (steps.amplify_poll.outputs.status == 'failure' && format('Failed to deploy `{0}` to `{1}`!', steps.validate.outputs.version_tag, github.event.inputs.deployment_environment) || format('Deployment timed out for `{0}` to `{1}`.', steps.validate.outputs.version_tag, github.event.inputs.deployment_environment)) }}"
           message_type: "${{ steps.amplify_poll.outputs.status == 'success' && 'success' || 'error' }}"
 
       - name: Cleanup .env.deploy
