@@ -141,7 +141,7 @@ jobs:
               exit 1
             fi
 
-            sleep 2
+            sleep 10
           done
 
           echo "::error::Deployment timed out waiting for success."
