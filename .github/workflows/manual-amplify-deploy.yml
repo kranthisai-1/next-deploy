@@ -54,7 +54,8 @@ jobs:
       - name: Checkout target branch
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.deployment_environment }}
+          ref: main
+          show-progress: false
 
       - name: Create .env.deploy
         run: |
