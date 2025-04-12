@@ -92,7 +92,7 @@ jobs:
         env:
           AWS_REGION: us-east-1
           APP_ID: d1uwoew2a9382l
-          BRANCH_NAME: ${{ github.event.inputs.deployment_environment }}
+          BRANCH_NAME: $([[ "${{ github.event.inputs.deployment_environment }}" == "production" ]] && echo "main" || echo "${{ github.event.inputs.deployment_environment }}")
         run: |
           echo "Polling Amplify for deployment status..."
           sleep 10
