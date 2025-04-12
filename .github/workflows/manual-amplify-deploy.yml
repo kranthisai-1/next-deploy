@@ -87,6 +87,7 @@ jobs:
           curl -X POST "${{ steps.webhook.outputs.url }}"
 
       - name: Poll Amplify deployment status
+        id: amplify_poll
         env:
           AWS_REGION: us-east-1
           APP_ID: d1uwoew2a9382l
@@ -150,7 +151,7 @@ jobs:
         with:
           channel_id: ${{ secrets.SLACK_CHANNEL_ID }}
           slack_token: ${{ secrets.SLACK_TOKEN }}
-          title: ${{ steps.amplify_poll.outputs.status == 'success' && 'Deployment successful' || (steps.amplify_poll.outputs.status == 'failure' && 'Deployment failed' || 'Deployment timed out') }}
+          title: ${{ steps.amplify_poll.outputs.status == 'success' && 'Deployment successful' || (steps.amplify_poll.outputs.status == 'failure' && 'Deployment failed') }}
           message: "${{ steps.amplify_poll.outputs.status == 'success' && format('Successfully deployed `{0}` to `{1}` and is ready to use!', steps.validate.outputs.version_tag, github.event.inputs.deployment_environment) || (steps.amplify_poll.outputs.status == 'failure' && format('Failed to deploy `{0}` to `{1}`!', steps.validate.outputs.version_tag, github.event.inputs.deployment_environment) || format('Deployment timed out for `{0}` to `{1}`.', steps.validate.outputs.version_tag, github.event.inputs.deployment_environment)) }}"
           message_type: "${{ steps.amplify_poll.outputs.status == 'success' && 'success' || 'error' }}"
 
