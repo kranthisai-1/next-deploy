@@ -103,7 +103,7 @@ jobs:
 
           echo "Latest job ID: $job_id"
 
-          for i in {1..30}; do
+          while true; do
             job_data=$(aws amplify get-job \
               --app-id "$APP_ID" \
               --branch-name "$BRANCH_NAME" \
@@ -141,7 +141,7 @@ jobs:
               exit 1
             fi
 
-            sleep 2
+            sleep 10
           done
 
           echo "::error::Deployment timed out waiting for success."
