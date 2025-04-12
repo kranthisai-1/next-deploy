@@ -41,8 +41,7 @@ jobs:
           channel_id: ${{ secrets.SLACK_CHANNEL_ID }}
           slack_token: ${{ secrets.SLACK_TOKEN }}
           title: "Deployment initiated"
-          message: |
-            Deploying `${{ steps.validate.outputs.version_tag }}` to `${{ github.event.inputs.deployment_environment }}` now!
+          message: "Deploying `${{ steps.validate.outputs.version_tag }}` to `${{ github.event.inputs.deployment_environment }}` now!"
           message_type: "info"
 
       - name: Configure AWS credentials (OIDC)
@@ -148,6 +147,7 @@ jobs:
           echo "::error::Deployment timed out waiting for success."
           echo "status=timeout" >> $GITHUB_OUTPUT
           exit 1
+
       - name: Notify Slack - Deployment Result
         if: always()
         uses: kranthisai-1/workflows/slack-alert@main
