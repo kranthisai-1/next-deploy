@@ -41,8 +41,8 @@ jobs:
           channel_id: ${{ secrets.SLACK_CHANNEL_ID }}
           slack_token: ${{ secrets.SLACK_TOKEN }}
           title: "Deployment initiated"
-          message: >
-            Deploying `v${{ steps.validate.outputs.version_tag }}` to `${{ github.event.inputs.deployment_environment }}` now!
+          message: |
+            Deploying `${{ steps.validate.outputs.version_tag }}` to `${{ github.event.inputs.deployment_environment }}` now!
           message_type: "info"
 
       - name: Configure AWS credentials (OIDC)
