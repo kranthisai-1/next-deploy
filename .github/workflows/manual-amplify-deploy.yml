@@ -36,7 +36,7 @@ jobs:
           echo "version_tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
       - name: Notify Slack - Deployment Started
-        uses: todaypay/workflows/slack-alert@main
+        uses: kranthisai-1/workflows/slack-alert@main
         with:
           channel_id: ${{ secrets.SLACK_CHANNEL_ID }}
           slack_token: ${{ secrets.SLACK_TOKEN }}
@@ -150,7 +150,7 @@ jobs:
           exit 1
       - name: Notify Slack - Deployment Result
         if: always()
-        uses: todaypay/workflows/slack-alert@main
+        uses: kranthisai-1/workflows/slack-alert@main
         with:
           channel_id: ${{ secrets.SLACK_CHANNEL_ID }}
           slack_token: ${{ secrets.SLACK_TOKEN }}
