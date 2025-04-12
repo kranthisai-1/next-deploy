@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+  repository_dispatch:
+    types: [semantic-release]
 
 permissions:
   contents: write
@@ -13,48 +15,38 @@ permissions:
 
 jobs:
   release:
-    name: Release
     runs-on: ubuntu-latest
-
     outputs:
-      released: ${{ steps.semantic.outputs.released }}
-      version: ${{ steps.semantic.outputs.version }}
-
+      version: ${{ steps.release.outputs.version }}
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - name: Create Release
+        id: release
+        uses: kranthisai-1/workflows/semantic-release@main 
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Release success alert
+        if: ${{ steps.release.outputs.version != '' && github.ref_name == github.event.repository.default_branch }}
+        uses: kranthisai-1/workflows/slack-alert@main
         with:
-          node-version: latest
+          channel_id: ${{ secrets.SLACK_CHANNEL_ID }}
+          slack_token: ${{ secrets.SLACK_TOKEN }}
+          title: "Release successful"
+          message: "New version `v${{ steps.release.outputs.version }}` has been released."
+          message_type: "success"
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Release failure alert
+        if: ${{ steps.release.outputs.version == '' && github.ref_name == github.event.repository.default_branch }}
+        uses: kranthisai-1/workflows/slack-alert@main
+        with:
+          channel_id: ${{ secrets.SLACK_CHANNEL_ID }}
+          slack_token: ${{ secrets.SLACK_TOKEN }}
+          title: "Failed to create a release"
+          message: "Pushed to `main` branch, but failed to create a release."
+          message_type: "error"
 
-      - name: Run semantic-release and extract version
-        id: semantic
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          RELEASE_OUTPUT=$(npx semantic-release)
-          echo "$RELEASE_OUTPUT"
-          if echo "$RELEASE_OUTPUT" | grep -q "Published release"; then
-            version=$(echo "$RELEASE_OUTPUT" | grep -oP 'Published release \K([0-9]+\.[0-9]+\.[0-9]+)')
-            echo "Published version: $version"
-            echo "released=true" >> "$GITHUB_OUTPUT"
-            echo "version=$version" >> "$GITHUB_OUTPUT"
-          else
-            echo "No valid commit for version release."
-            echo "No new version published. Failing the workflow."
-            exit 1
-          fi
-
-  # deploy-staging:
-  #   name: Deploy to Amplify (Staging)
+  # deploy:
   #   needs: release
+  #   if: ${{ needs.release.outputs.version != '' }}
   #   runs-on: ubuntu-latest
-
   #   steps:
   #     - name: Trigger Amplify Staging webhook
   #       run: |
