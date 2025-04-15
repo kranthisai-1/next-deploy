@@ -1,3 +1,119 @@
+## [1.3.24](https://github.com/kranthisai-1/next-deploy/compare/v1.3.23...v1.3.24) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixes ([f533856](https://github.com/kranthisai-1/next-deploy/commit/f5338566a96adfeb08e1c9d57653f07efcf54fbd))
+
+## [1.3.23](https://github.com/kranthisai-1/next-deploy/compare/v1.3.22...v1.3.23) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixes ([b2bcfc5](https://github.com/kranthisai-1/next-deploy/commit/b2bcfc5eee39c1363c98a1ac9f0945a6d03fe45e))
+
+## [1.3.22](https://github.com/kranthisai-1/next-deploy/compare/v1.3.21...v1.3.22) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixes ([58db176](https://github.com/kranthisai-1/next-deploy/commit/58db1763dfeabc00a30789b7f4bbdf90fbfc57be))
+
+## [1.3.21](https://github.com/kranthisai-1/next-deploy/compare/v1.3.20...v1.3.21) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixes ([3ce1bd3](https://github.com/kranthisai-1/next-deploy/commit/3ce1bd3441c4f7ff9a544b5019a20fd8a9612aa9))
+* fixes ([728e792](https://github.com/kranthisai-1/next-deploy/commit/728e7924f208e1d43538a12eafa9fda89351c2f7))
+
+## [1.3.20](https://github.com/kranthisai-1/next-deploy/compare/v1.3.19...v1.3.20) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixes ([24c0f40](https://github.com/kranthisai-1/next-deploy/commit/24c0f407eea9b55bc7449ac2cd8c206b89d8f4ec))
+
+## [1.3.19](https://github.com/kranthisai-1/next-deploy/compare/v1.3.18...v1.3.19) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixes ([232fc88](https://github.com/kranthisai-1/next-deploy/commit/232fc88d6808a493d24822c398e83ffa4917e5a1))
+* Staging ([e3fba13](https://github.com/kranthisai-1/next-deploy/commit/e3fba13f09ff863d11eb2c0a11e6c09b41a61a69))
+
+## [1.3.18](https://github.com/kranthisai-1/next-deploy/compare/v1.3.17...v1.3.18) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixes ([66f416e](https://github.com/kranthisai-1/next-deploy/commit/66f416e03c8f3c65f07822d4ad37f791e9d03838))
+* Staging ([d36220c](https://github.com/kranthisai-1/next-deploy/commit/d36220c031349fbfa57b0b1fbae53f738a02898f))
+
+## [1.3.17](https://github.com/kranthisai-1/next-deploy/compare/v1.3.16...v1.3.17) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixes ([28bfbf1](https://github.com/kranthisai-1/next-deploy/commit/28bfbf1e1f062ee23ccdfab54543cfa95ac383ff))
+* fixes ([21d9778](https://github.com/kranthisai-1/next-deploy/commit/21d97782c7481e223748ed648e17969bbeabb32a))
+* fixes ([b6d76df](https://github.com/kranthisai-1/next-deploy/commit/b6d76dfdc6d2fdc9db8312a8b57a820e96e0eb40))
+* Staging ([5685e7a](https://github.com/kranthisai-1/next-deploy/commit/5685e7a8c974b18eb0cc272c4b0513111bcf44d7))
+
+## [1.3.16](https://github.com/kranthisai-1/next-deploy/compare/v1.3.15...v1.3.16) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixes ([0868f65](https://github.com/kranthisai-1/next-deploy/commit/0868f65a8f0516f78d402d4e7d0b7ecf17721ce1))
+
+## [1.3.15](https://github.com/kranthisai-1/next-deploy/compare/v1.3.14...v1.3.15) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixes ([03009ae](https://github.com/kranthisai-1/next-deploy/commit/03009ae10c4f6e6eee1ec814015f00d8d724dbb5))
+* Staging ([6157693](https://github.com/kranthisai-1/next-deploy/commit/61576934fb341c42f1289a08749a3e6a41f2c32a))
+
+## [1.3.14](https://github.com/kranthisai-1/next-deploy/compare/v1.3.13...v1.3.14) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixes ([75ae2a4](https://github.com/kranthisai-1/next-deploy/commit/75ae2a445e16c33c19bb63c4293a3eb1aad8ed55))
+* fixes ([2023a46](https://github.com/kranthisai-1/next-deploy/commit/2023a46770bb508fe60dd39b2947be8ec240fb0b))
+* Staging ([246c0f3](https://github.com/kranthisai-1/next-deploy/commit/246c0f3c8c3f3e2d1acbac658add018e1b722826))
+
+## [1.3.13](https://github.com/kranthisai-1/next-deploy/compare/v1.3.12...v1.3.13) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixes ([e3bf83b](https://github.com/kranthisai-1/next-deploy/commit/e3bf83b12ccf7867c6c4d6f0a36c718944db4d88))
+
+## [1.3.12](https://github.com/kranthisai-1/next-deploy/compare/v1.3.11...v1.3.12) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixes ([637e854](https://github.com/kranthisai-1/next-deploy/commit/637e854e43171e2906f80e29c5e07e74f1863699))
+* fixes ([c845edb](https://github.com/kranthisai-1/next-deploy/commit/c845edb0ca0267ee876b5bd22fe892f6a152caea))
+
+## [1.3.11](https://github.com/kranthisai-1/next-deploy/compare/v1.3.10...v1.3.11) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixes ([4bc9e3b](https://github.com/kranthisai-1/next-deploy/commit/4bc9e3b6827fd17a7ea1c9eb9dc51b37b66a2200))
+
+## [1.3.10](https://github.com/kranthisai-1/next-deploy/compare/v1.3.9...v1.3.10) (2025-04-10)
+
+
+### Bug Fixes
+
+* fixes ([bd8c0a1](https://github.com/kranthisai-1/next-deploy/commit/bd8c0a1fd5ee25deff3daccc21a00d163bfa49fd))
+* Staging ([4b2ce33](https://github.com/kranthisai-1/next-deploy/commit/4b2ce33e4a16da954b3141209798b153da0b50f3))
+
 ## [1.3.9](https://github.com/kranthisai-1/next-deploy/compare/v1.3.8...v1.3.9) (2025-04-10)
 
 
